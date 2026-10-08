@@ -1,0 +1,19 @@
+SafePick SA — Unconfirmed Pickup
+
+Dear Parent/Guardian,
+
+This is to inform you that {{LearnerName}} (Class {{ClassGroup}})
+was expected to be picked up today by the transport arranged through
+{{SchoolName}}, but the pickup has not been confirmed.
+
+This does not necessarily mean the pickup did not happen — the
+driver may still be syncing. However, the school has been notified
+and is following up.
+
+If you have information about this learner's transport today, please
+contact the school administrator as soon as possible.
+
+This is an automated notification from SafePick SA.
+
+— SafePick SA
+Digital Learner Transport Verification

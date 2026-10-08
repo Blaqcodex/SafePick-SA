@@ -1,0 +1,15 @@
+SafePick SA — Pickup Confirmation
+
+Dear Parent/Guardian,
+
+This is to confirm that {{LearnerName}} (Class {{ClassGroup}})
+was picked up at {{PickupTime}}.
+
+A PDF receipt is attached to this email for your records.
+
+This is an automated notification from SafePick SA. If you believe
+this notification was sent in error, please contact your school
+administrator.
+
+— SafePick SA
+Digital Learner Transport Verification

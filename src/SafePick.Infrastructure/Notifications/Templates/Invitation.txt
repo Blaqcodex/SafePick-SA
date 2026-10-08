@@ -1,0 +1,25 @@
+Hello {{RecipientName}},
+
+You've been invited to SafePick SA as the School Administrator for
+{{SchoolName}}.
+
+SafePick SA is a digital learner transport verification system that
+provides a verifiable chain of custody for school learners who use
+private transport services.
+
+To set up your account, open this link in your browser:
+
+{{InviteUrl}}
+
+Or, if the link doesn't work, use this invitation token directly:
+
+{{RawToken}}
+
+This invitation expires on {{ExpiresAt}}. After that, the token will
+no longer be valid.
+
+If you did not expect this invitation, you can safely ignore this
+email.
+
+— SafePick SA
+Digital Learner Transport Verification

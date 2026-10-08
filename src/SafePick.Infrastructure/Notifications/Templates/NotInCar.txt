@@ -1,0 +1,18 @@
+SafePick SA — Learner Not Collected
+
+Dear Parent/Guardian,
+
+This is to inform you that {{LearnerName}} (Class {{ClassGroup}})
+was expected to be collected today, but the driver has reported
+the learner was not in the vehicle.
+
+Reason reported by the driver:
+"{{Reason}}"
+
+If this is unexpected, please contact your school administrator
+as soon as possible.
+
+This is an automated notification from SafePick SA.
+
+— SafePick SA
+Digital Learner Transport Verification

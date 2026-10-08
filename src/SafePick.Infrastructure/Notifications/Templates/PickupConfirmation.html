@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>SafePick SA — Pickup Confirmation</title>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f5f7fa; margin: 0; padding: 24px; color: #1f2937; }
+  .card { background: #ffffff; border-radius: 8px; max-width: 600px; margin: 0 auto; padding: 32px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+  .header { border-bottom: 2px solid #10b981; padding-bottom: 16px; margin-bottom: 24px; }
+  .header h1 { margin: 0; font-size: 20px; color: #065f46; }
+  .header p { margin: 4px 0 0; font-size: 13px; color: #6b7280; }
+  .status-badge { display: inline-block; background: #d1fae5; color: #065f46; padding: 4px 12px; border-radius: 999px; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em; }
+  .details { margin: 24px 0; padding: 16px; background: #f9fafb; border-radius: 6px; }
+  .details dt { font-size: 12px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 2px; }
+  .details dd { margin: 0 0 12px; font-size: 15px; color: #111827; font-weight: 500; }
+  .details dd:last-child { margin-bottom: 0; }
+  .footer { margin-top: 32px; padding-top: 16px; border-top: 1px solid #e5e7eb; font-size: 12px; color: #6b7280; line-height: 1.5; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="header">
+      <h1>SafePick SA — Pickup Confirmation</h1>
+      <p>Digital Learner Transport Verification</p>
+    </div>
+
+    <p>Dear Parent/Guardian,</p>
+
+    <p>
+      <span class="status-badge">Picked up</span>
+    </p>
+
+    <p>This is to confirm that the learner below was picked up as scheduled.</p>
+
+    <dl class="details">
+      <dt>Learner</dt>
+      <dd>{{LearnerName}}</dd>
+
+      <dt>Class</dt>
+      <dd>{{ClassGroup}}</dd>
+
+      <dt>Pickup time (SAST)</dt>
+      <dd>{{PickupTime}}</dd>
+    </dl>
+
+    <p>A PDF receipt is attached to this email for your records.</p>
+
+    <div class="footer">
+      This is an automated notification from SafePick SA. If you believe
+      this notification was sent in error, please contact your school
+      administrator.
+      <br><br>
+      — SafePick SA<br>
+      Digital Learner Transport Verification
+    </div>
+  </div>
+</body>
+</html>
