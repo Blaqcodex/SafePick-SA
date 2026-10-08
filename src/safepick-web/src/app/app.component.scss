@@ -1,0 +1,10 @@
+// ============================================================
+// App shell — intentionally minimal.
+// The root component is a pure routing host.
+// Layout (header, nav, footer) lives in features/layout.
+// ============================================================
+
+:host {
+  display: block;
+  min-height: 100vh;
+}

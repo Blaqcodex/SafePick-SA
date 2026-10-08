@@ -1,0 +1,258 @@
+// ============================================================
+// ShellComponent — 5.4b
+// The authenticated app frame with branded header.
+// ============================================================
+
+:host {
+  display: block;
+  min-height: 100vh;
+}
+
+.shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: var(--safepick-bg);
+}
+
+// ---------- Header ----------
+
+.shell__header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+
+  // Frosted glass over the brand gradient.
+  // The blur picks up whatever the page content is behind it
+  // when the user scrolls — the same glass language as the
+  // login card.
+  background: linear-gradient(
+    135deg,
+    rgba(44, 82, 130, 0.92) 0%,
+    rgba(30, 58, 95, 0.95) 100%
+  );
+  backdrop-filter: blur(18px) saturate(120%);
+  -webkit-backdrop-filter: blur(18px) saturate(120%);
+
+  color: var(--safepick-text-inverse);
+
+  // Metallic inset sheen — a hairline of white light at the top.
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 4px 16px -4px rgba(0, 0, 0, 0.25);
+
+  // Emerald hairline at the bottom — the brand signature.
+  border-bottom: 1px solid rgba(16, 185, 129, 0.35);
+}
+
+// ---------- Top row: brand + user ----------
+
+.shell__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--safepick-space-4);
+  padding: var(--safepick-space-3) var(--safepick-space-5);
+}
+
+// ---------- Brand ----------
+
+.shell__brand {
+  display: flex;
+  align-items: center;
+  gap: var(--safepick-space-3);
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  transition: opacity var(--safepick-motion-fast) var(--safepick-ease-out);
+
+  &:hover {
+    opacity: 0.85;
+  }
+}
+
+// The white "logo chip" — solves the JPG-on-white problem
+// by giving the logo a deliberate container.
+.shell__logo-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--safepick-radius-md);
+  background: #FFFFFF;
+  overflow: hidden;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    0 2px 6px rgba(0, 0, 0, 0.25),
+    0 0 0 1px rgba(255, 255, 255, 0.10);
+}
+
+.shell__logo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+// The gradient brand name — matches the login page.
+.shell__brand-name {
+  font-weight: 700;
+  font-size: var(--safepick-text-lg);
+  letter-spacing: -0.02em;
+
+  background: linear-gradient(
+    120deg,
+    #B8E0FF 0%,
+    #E5F3FF 25%,
+    #A7F3D0 65%,
+    #10B981 100%
+  );
+  -webkit-background-clip: text;
+          background-clip: text;
+  -webkit-text-fill-color: transparent;
+          color: transparent;
+}
+
+// ---------- User block ----------
+
+.shell__user {
+  display: flex;
+  align-items: center;
+  gap: var(--safepick-space-3);
+  font-size: var(--safepick-text-sm);
+}
+
+.shell__user-email {
+  opacity: 0.85;
+  max-width: 240px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  @media (max-width: 768px) {
+    display: none;
+  }
+}
+
+.shell__user-role {
+  padding: 3px 10px;
+  background: rgba(16, 185, 129, 0.18);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  border-radius: var(--safepick-radius-pill);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #A7F3D0;
+
+  @media (max-width: 480px) {
+    display: none;
+  }
+}
+
+.shell__logout {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  background: rgba(255, 255, 255, 0.10);
+  color: var(--safepick-text-inverse);
+  border: 1px solid rgba(255, 255, 255, 0.20);
+  border-radius: var(--safepick-radius-md);
+  font-size: var(--safepick-text-sm);
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+  transition:
+    background var(--safepick-motion-fast) var(--safepick-ease-out),
+    border-color var(--safepick-motion-fast) var(--safepick-ease-out),
+    transform var(--safepick-motion-fast) var(--safepick-ease-out);
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.18);
+    border-color: rgba(255, 255, 255, 0.32);
+  }
+
+  &:active {
+    transform: translateY(1px);
+  }
+}
+
+.shell__logout-label {
+  @media (max-width: 600px) {
+    display: none;
+  }
+}
+
+// ---------- Navigation row ----------
+
+.shell__nav {
+  display: flex;
+  align-items: center;
+  gap: var(--safepick-space-1);
+  padding: 0 var(--safepick-space-5) var(--safepick-space-2);
+  overflow-x: auto;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+// ---------- Navigation links ----------
+
+.shell__nav-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  border-radius: var(--safepick-radius-md);
+  color: rgba(255, 255, 255, 0.78);
+  font-size: var(--safepick-text-sm);
+  font-weight: 500;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background var(--safepick-motion-fast) var(--safepick-ease-out),
+    color var(--safepick-motion-fast) var(--safepick-ease-out);
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    opacity: 0.9;
+  }
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #FFFFFF;
+  }
+
+  // Active state — a soft emerald glow + brighter text.
+  &--active {
+    background: rgba(16, 185, 129, 0.18);
+    color: #FFFFFF;
+    box-shadow: inset 0 0 0 1px rgba(16, 185, 129, 0.35);
+
+    mat-icon {
+      color: #A7F3D0;
+      opacity: 1;
+    }
+  }
+}
+
+// ---------- Main content ----------
+
+.shell__main {
+  flex: 1;
+  min-height: 0;
+  padding: var(--safepick-space-5);
+}

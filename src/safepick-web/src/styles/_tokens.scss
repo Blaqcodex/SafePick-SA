@@ -1,0 +1,95 @@
+// ============================================================
+// SafePick SA — Design Tokens
+// Single source of truth for the visual system.
+// Palette: #1E3A5F (blue) + #10B981 (green) — LOCKED.
+// ============================================================
+
+:root {
+  // ---------- Brand colors ----------
+  --safepick-primary:        #1E3A5F;   // Deep blue — the brand
+  --safepick-primary-light:  #2C5282;   // Hover / active blue
+  --safepick-primary-dark:   #142A45;   // Pressed blue
+  --safepick-accent:         #10B981;   // Emerald green — custody confirmed
+  --safepick-accent-dark:    #059669;   // Hover / pressed green
+  --safepick-accent-light:   #D1FAE5;   // Soft green tint
+
+  // ---------- Semantic colors ----------
+  --safepick-warning:        #F59E0B;   // Amber — not-in-car, gaps
+  --safepick-warning-light:  #FEF3C7;
+  --safepick-danger:         #DC2626;   // Red — errors, unresolved
+  --safepick-danger-light:   #FEE2E2;
+
+  // ---------- Metallics ----------
+  --safepick-metal-1:        #E5E7EB;
+  --safepick-metal-2:        #9CA3AF;
+  --safepick-metal-3:        #4B5563;
+
+  // ---------- Surfaces ----------
+  --safepick-surface:        #FFFFFF;
+  --safepick-surface-alt:    #F9FAFB;
+  --safepick-bg:             #e4e6eb;
+  --safepick-border:         #E5E7EB;
+
+  // ---------- Text ----------
+  --safepick-text:           #111827;
+  --safepick-text-muted:     #6B7280;
+  --safepick-text-inverse:   #FFFFFF;
+
+  // ---------- Metallic gradient (buttons, headers, login card) ----------
+  --safepick-gradient-blue:  linear-gradient(135deg, #2C5282 0%, #1E3A5F 100%);
+  --safepick-gradient-green: linear-gradient(135deg, #10B981 0%, #059669 100%);
+
+  // ---------- Shadows ----------
+  --safepick-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --safepick-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.10);
+  --safepick-shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.15);
+  --safepick-shadow-inset-sheen: inset 0 1px 0 rgba(255, 255, 255, 0.15);
+
+  // ---------- Spacing scale ----------
+  --safepick-space-1: 4px;
+  --safepick-space-2: 8px;
+  --safepick-space-3: 12px;
+  --safepick-space-4: 16px;
+  --safepick-space-5: 24px;
+  --safepick-space-6: 32px;
+  --safepick-space-7: 48px;
+  --safepick-space-8: 64px;
+
+  // ---------- Radius ----------
+  --safepick-radius-sm: 4px;
+  --safepick-radius-md: 8px;
+  --safepick-radius-lg: 12px;
+  --safepick-radius-xl: 16px;
+  --safepick-radius-pill: 999px;
+
+  // ---------- Typography ----------
+  --safepick-font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --safepick-font-mono: 'JetBrains Mono', 'Courier New', monospace;
+
+  --safepick-text-xs:  12px;
+  --safepick-text-sm:  14px;
+  --safepick-text-md:  16px;
+  --safepick-text-lg:  18px;
+  --safepick-text-xl:  22px;
+  --safepick-text-2xl: 28px;
+  --safepick-text-3xl: 34px;
+
+  // ---------- Motion ----------
+  --safepick-motion-fast:  150ms;
+  --safepick-motion-base:  250ms;
+  --safepick-motion-slow:  400ms;
+  --safepick-ease-out:     cubic-bezier(0.16, 1, 0.3, 1);
+  --safepick-ease-in-out:  cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+// ============================================================
+// Reduced-motion: disable all non-essential motion.
+// Honored by every component that animates.
+// ============================================================
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --safepick-motion-fast: 0ms;
+    --safepick-motion-base: 0ms;
+    --safepick-motion-slow: 0ms;
+  }
+}

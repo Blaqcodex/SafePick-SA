@@ -1,0 +1,67 @@
+<!-- ============================================================
+     ShellComponent — 5.4c
+     The authenticated app frame with role-aware navigation.
+     ============================================================ -->
+
+<div class="shell">
+
+  <header class="shell__header">
+
+    <!-- Top row: brand + user -->
+    <div class="shell__row">
+
+      <a class="shell__brand" [routerLink]="homePath()">
+        <span class="shell__logo-chip">
+          <img
+            class="shell__logo"
+            src="assets/logo.jpg"
+            alt="SafePick SA logo" />
+        </span>
+        <span class="shell__brand-name">SafePick SA</span>
+      </a>
+
+      <!-- User block -->
+      <div class="shell__user">
+        <span class="shell__user-email" [title]="email() || ''">
+          {{ email() }}
+        </span>
+
+        <span class="shell__user-role">
+          {{ role() }}
+        </span>
+
+        <button
+          type="button"
+          class="shell__logout"
+          (click)="logout()"
+          aria-label="Sign out">
+          <mat-icon aria-hidden="true">logout</mat-icon>
+          <span class="shell__logout-label">Sign out</span>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Role-aware navigation -->
+    @if (navLinks().length > 0) {
+      <nav class="shell__nav" aria-label="Primary">
+        @for (link of navLinks(); track link.path) {
+          <a
+            class="shell__nav-link"
+            [routerLink]="link.path"
+            routerLinkActive="shell__nav-link--active"
+            [routerLinkActiveOptions]="{ exact: false }">
+            <mat-icon aria-hidden="true">{{ link.icon }}</mat-icon>
+            <span>{{ link.label }}</span>
+          </a>
+        }
+      </nav>
+    }
+
+  </header>
+
+  <main class="shell__main">
+    <router-outlet></router-outlet>
+  </main>
+
+</div>

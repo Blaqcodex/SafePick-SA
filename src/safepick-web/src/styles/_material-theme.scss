@@ -1,0 +1,87 @@
+// ============================================================
+// SafePick SA — Angular Material theme
+// For @angular/material 17.3.10 — uses the M2 theming API
+// (mat.define-light-theme), which is the stable path for
+// this version. The M3 mat.theme() API exists but has quirks
+// with custom palettes at 17.3.x.
+// ============================================================
+
+@use '@angular/material' as mat;
+
+// Include the common styles for Angular Material.
+// This must be included exactly ONCE in the application.
+@include mat.core();
+
+// ---------- SafePick SA primary palette (navy) ----------
+$safepick-primary-palette: (
+  50:   #E8EDF3,
+  100:  #C6D3E1,
+  200:  #A1B7CE,
+  300:  #7B9ABA,
+  400:  #5F85A9,
+  500:  #1E3A5F,  // our primary navy
+  600:  #1A3354,
+  700:  #162C49,
+  800:  #12253E,
+  900:  #0C1A2D,
+  contrast: (
+    50:   #111827,
+    100:  #111827,
+    200:  #111827,
+    300:  #111827,
+    400:  #FFFFFF,
+    500:  #FFFFFF,
+    600:  #FFFFFF,
+    700:  #FFFFFF,
+    800:  #FFFFFF,
+    900:  #FFFFFF,
+  ),
+);
+
+// ---------- SafePick SA accent palette (emerald green) ----------
+$safepick-accent-palette: (
+  50:   #E7F9F1,
+  100:  #C3EFDE,
+  200:  #9CE5C9,
+  300:  #74DAB3,
+  400:  #55D1A2,
+  500:  #10B981,  // our accent green
+  600:  #0EA575,
+  700:  #0B8F66,
+  800:  #097A56,
+  900:  #06553C,
+  contrast: (
+    50:   #111827,
+    100:  #111827,
+    200:  #111827,
+    300:  #111827,
+    400:  #111827,
+    500:  #FFFFFF,
+    600:  #FFFFFF,
+    700:  #FFFFFF,
+    800:  #FFFFFF,
+    900:  #FFFFFF,
+  ),
+);
+
+// ---------- Assemble the theme ----------
+$safepick-primary: mat.define-palette($safepick-primary-palette, 500);
+$safepick-accent:  mat.define-palette($safepick-accent-palette, 500);
+$safepick-warn:    mat.define-palette(mat.$red-palette);
+
+$safepick-theme: mat.define-light-theme((
+  color: (
+    primary: $safepick-primary,
+    accent:  $safepick-accent,
+    warn:    $safepick-warn,
+  ),
+  typography: mat.define-typography-config(
+    $font-family: 'Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif',
+  ),
+  density: 0,
+));
+
+// ---------- Emit the theme styles ----------
+html {
+  @include mat.all-component-themes($safepick-theme);
+}
