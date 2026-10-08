@@ -1,0 +1,352 @@
+<!-- ============================================================
+     RegisterDriverComponent — 5.10-DRIVER-REG-b
+     ============================================================ -->
+
+<main class="register-page">
+
+  <section class="register-card">
+
+    <!-- Brand header -->
+    <header class="register-card__header">
+      <img
+        class="register-card__logo"
+        src="assets/logo.jpg"
+        alt="SafePick SA logo"
+        width="72"
+        height="80" />
+
+      <div class="register-card__rule" aria-hidden="true"></div>
+
+      <h1 class="register-card__brand">SafePick SA</h1>
+    </header>
+
+    <!-- =================== STEP 1: Personal =================== -->
+    @if (step() === 'personal') {
+
+      <div class="register-card__steps">
+        <span class="step-dot step-dot--active">1</span>
+        <span class="step-line"></span>
+        <span class="step-dot">2</span>
+        <span class="step-line"></span>
+        <span class="step-dot">3</span>
+      </div>
+
+      <h2 class="register-card__title">{{ stepTitle() }}</h2>
+      <p class="register-card__subtitle">{{ stepSubtitle() }}</p>
+
+      <form
+        class="register-form"
+        [formGroup]="personalForm"
+        (ngSubmit)="goToVehicleStep()"
+        novalidate>
+
+        <!-- Full name -->
+        <label class="register-form__field">
+          <span class="register-form__label">Full name</span>
+          <input
+            type="text"
+            class="register-form__input"
+            formControlName="fullName"
+            placeholder="e.g. Thabo Mokoena"
+            autocomplete="name"
+            [attr.aria-invalid]="fullName.invalid && fullName.touched" />
+          @if (fullName.touched && fullName.hasError('required')) {
+            <span class="register-form__error">Full name is required.</span>
+          } @else if (fullName.touched && fullName.hasError('minlength')) {
+            <span class="register-form__error">Name is too short.</span>
+          }
+        </label>
+
+        <!-- ID number -->
+        <label class="register-form__field">
+          <span class="register-form__label">ID number</span>
+          <input
+            type="text"
+            class="register-form__input"
+            formControlName="idNumber"
+            placeholder="e.g. 9001015800085"
+            autocomplete="off"
+            inputmode="numeric"
+            [attr.aria-invalid]="idNumber.invalid && idNumber.touched" />
+          @if (idNumber.touched && idNumber.invalid) {
+            <span class="register-form__error">A valid ID number is required.</span>
+          }
+        </label>
+
+        <!-- Phone -->
+        <label class="register-form__field">
+          <span class="register-form__label">Phone number</span>
+          <input
+            type="tel"
+            class="register-form__input"
+            formControlName="phone"
+            placeholder="+27 82 123 4567"
+            autocomplete="tel"
+            inputmode="tel"
+            [attr.aria-invalid]="phone.invalid && phone.touched" />
+          @if (phone.touched && phone.invalid) {
+            <span class="register-form__error">A valid phone number is required.</span>
+          }
+        </label>
+
+        <!-- Email -->
+        <label class="register-form__field">
+          <span class="register-form__label">Email</span>
+          <input
+            type="email"
+            class="register-form__input"
+            formControlName="email"
+            placeholder="you@example.co.za"
+            autocomplete="email"
+            inputmode="email"
+            spellcheck="false"
+            [attr.aria-invalid]="email.invalid && email.touched" />
+          @if (email.touched && email.hasError('required')) {
+            <span class="register-form__error">Email is required.</span>
+          } @else if (email.touched && email.hasError('email')) {
+            <span class="register-form__error">Please enter a valid email address.</span>
+          }
+        </label>
+
+        <!-- Password -->
+        <label class="register-form__field">
+          <span class="register-form__label">Password</span>
+          <div class="register-form__input-wrap">
+            <input
+              [type]="showPassword() ? 'text' : 'password'"
+              class="register-form__input"
+              formControlName="password"
+              placeholder="At least 8 characters"
+              autocomplete="new-password"
+              [attr.aria-invalid]="password.invalid && password.touched" />
+            <button
+              type="button"
+              class="register-form__toggle"
+              [attr.aria-label]="showPassword() ? 'Hide password' : 'Show password'"
+              (click)="togglePassword()">
+              <mat-icon aria-hidden="true">
+                {{ showPassword() ? 'visibility_off' : 'visibility' }}
+              </mat-icon>
+            </button>
+          </div>
+          @if (password.touched && password.hasError('required')) {
+            <span class="register-form__error">Password is required.</span>
+          } @else if (password.touched && password.hasError('minlength')) {
+            <span class="register-form__error">Password must be at least 8 characters.</span>
+          }
+        </label>
+
+        <button
+          type="submit"
+          class="register-form__submit"
+          [disabled]="personalForm.invalid">
+          Continue
+        </button>
+
+      </form>
+
+      <p class="register-card__link">
+        Already have an account?
+        <a routerLink="/login">Sign in</a>
+      </p>
+    }
+
+    <!-- =================== STEP 2: Vehicle =================== -->
+    @if (step() === 'vehicle') {
+
+      <div class="register-card__steps">
+        <span class="step-dot step-dot--done">✓</span>
+        <span class="step-line step-line--done"></span>
+        <span class="step-dot step-dot--active">2</span>
+        <span class="step-line"></span>
+        <span class="step-dot">3</span>
+      </div>
+
+      <h2 class="register-card__title">{{ stepTitle() }}</h2>
+      <p class="register-card__subtitle">{{ stepSubtitle() }}</p>
+
+      <form
+        class="register-form"
+        [formGroup]="vehicleForm"
+        (ngSubmit)="onSubmit()"
+        novalidate>
+
+        <!-- Registration -->
+        <label class="register-form__field">
+          <span class="register-form__label">Vehicle registration</span>
+          <input
+            type="text"
+            class="register-form__input register-form__input--plate"
+            formControlName="vehicleRegistrationNumber"
+            placeholder="e.g. ABC 123 GP"
+            autocomplete="off"
+            spellcheck="false"
+            [attr.aria-invalid]="vehicleReg.invalid && vehicleReg.touched" />
+          @if (vehicleReg.touched && vehicleReg.invalid) {
+            <span class="register-form__error">Registration is required.</span>
+          }
+        </label>
+
+        <!-- Make + Model -->
+        <div class="register-form__row">
+          <label class="register-form__field">
+            <span class="register-form__label">Make</span>
+            <input
+              type="text"
+              class="register-form__input"
+              formControlName="vehicleMake"
+              placeholder="e.g. Toyota"
+              autocomplete="off"
+              [attr.aria-invalid]="vehicleMake.invalid && vehicleMake.touched" />
+            @if (vehicleMake.touched && vehicleMake.invalid) {
+              <span class="register-form__error">Make is required.</span>
+            }
+          </label>
+
+          <label class="register-form__field">
+            <span class="register-form__label">Model</span>
+            <input
+              type="text"
+              class="register-form__input"
+              formControlName="vehicleModel"
+              placeholder="e.g. Quantum"
+              autocomplete="off"
+              [attr.aria-invalid]="vehicleModel.invalid && vehicleModel.touched" />
+            @if (vehicleModel.touched && vehicleModel.invalid) {
+              <span class="register-form__error">Model is required.</span>
+            }
+          </label>
+        </div>
+
+        <!-- Capacity -->
+        <label class="register-form__field">
+          <span class="register-form__label">Seating capacity</span>
+          <input
+            type="number"
+            class="register-form__input"
+            formControlName="vehicleCapacity"
+            min="1"
+            max="100"
+            inputmode="numeric"
+            [attr.aria-invalid]="capacity.invalid && capacity.touched" />
+          @if (capacity.touched && capacity.invalid) {
+            <span class="register-form__error">Capacity must be between 1 and 100.</span>
+          }
+        </label>
+
+        <!-- School -->
+        <label class="register-form__field">
+          <span class="register-form__label">School</span>
+
+          @if (schoolsLoading()) {
+            <div class="register-form__loading">
+              <mat-spinner diameter="18"></mat-spinner>
+              <span>Loading schools…</span>
+            </div>
+          }
+
+          @if (!schoolsLoading() && schoolsError()) {
+            <div class="register-form__school-error">
+              <mat-icon aria-hidden="true">error_outline</mat-icon>
+              <span>{{ schoolsError() }}</span>
+              <button type="button" class="register-form__retry" (click)="loadSchools()">
+                Retry
+              </button>
+            </div>
+          }
+
+          @if (!schoolsLoading() && !schoolsError()) {
+            @if (schools().length === 0) {
+              <div class="register-form__school-error">
+                <mat-icon aria-hidden="true">info</mat-icon>
+                <span>No schools are registered yet. Please try again later.</span>
+              </div>
+            }
+            @if (schools().length > 0) {
+              <select
+                class="register-form__select"
+                formControlName="schoolId"
+                [attr.aria-invalid]="schoolId.invalid && schoolId.touched">
+                <option value="" disabled>Select a school</option>
+                @for (school of schools(); track school.schoolId) {
+                  <option [value]="school.schoolId">{{ school.name }}</option>
+                }
+              </select>
+              @if (schoolId.touched && schoolId.invalid) {
+                <span class="register-form__error">Please select a school.</span>
+              }
+            }
+          }
+        </label>
+
+        @if (errorMessage(); as msg) {
+          <div class="register-form__alert" role="alert">
+            <mat-icon aria-hidden="true">error_outline</mat-icon>
+            <span>{{ msg }}</span>
+          </div>
+        }
+
+        <div class="register-form__actions">
+          <button
+            type="button"
+            class="register-form__back"
+            [disabled]="submitting()"
+            (click)="goBackToPersonal()">
+            Back
+          </button>
+
+          <button
+            type="submit"
+            class="register-form__submit register-form__submit--grow"
+            [disabled]="submitting() || vehicleForm.invalid || schoolsLoading() || schools().length === 0">
+            @if (submitting()) {
+              <mat-spinner diameter="20"></mat-spinner>
+              <span>Creating account…</span>
+            } @else {
+              <span>Create account</span>
+            }
+          </button>
+        </div>
+
+      </form>
+    }
+
+    <!-- =================== STEP 3: Success =================== -->
+    @if (step() === 'done') {
+
+      <div class="register-card__steps">
+        <span class="step-dot step-dot--done">✓</span>
+        <span class="step-line step-line--done"></span>
+        <span class="step-dot step-dot--done">✓</span>
+        <span class="step-line step-line--done"></span>
+        <span class="step-dot step-dot--done">✓</span>
+      </div>
+
+      <div class="register-success">
+        <div class="register-success__icon">
+          <mat-icon aria-hidden="true">check_circle</mat-icon>
+        </div>
+
+        <h2 class="register-success__title">Registration submitted</h2>
+
+        <p class="register-success__text">
+          Your registration has been sent to the school admin for approval.
+          You can now sign in with your email and password.
+        </p>
+
+        <p class="register-success__hint">
+          You’ll be able to see your transport roster once your registration
+          has been approved.
+        </p>
+
+        <button
+          type="button"
+          class="register-success__button"
+          (click)="goToLogin()">
+          Go to sign in
+        </button>
+      </div>
+    }
+
+  </section>
+</main>

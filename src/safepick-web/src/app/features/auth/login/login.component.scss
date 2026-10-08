@@ -1,0 +1,385 @@
+// ============================================================
+// LoginComponent — 5.3d+
+// Dark, glass-morphic card with metallic gradient treatment.
+// Entrance animations and improved form field contrast.
+// Background transition timing preserved as authored.
+// ============================================================
+
+:host {
+  display: block;
+  min-height: 100vh;
+}
+
+.login-page {
+  position: relative;
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: var(--safepick-space-5);
+  overflow: hidden;
+}
+
+// ---------- Rotating background ----------
+
+.login-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+
+  // Fade the entire background in on first paint — reveals
+  // itself behind the card rather than appearing abruptly.
+  animation: login-bg-enter 900ms ease-out both;
+
+  &__layer {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    opacity: 0;
+    will-change: opacity, transform;
+    transform-origin: center;
+    animation: login-bg-cycle 10s infinite linear;
+  }
+
+  &__layer:nth-child(1) { animation-delay: 0s;  }
+  &__layer:nth-child(2) { animation-delay: 5s;  }
+  &__layer:nth-child(3) { animation-delay: 10s; }
+
+  &__overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      180deg,
+      rgba(30, 58, 95, 0.72) 0%,
+      rgba(20, 42, 69, 0.82) 100%
+    );
+    z-index: 1;
+  }
+}
+
+@keyframes login-bg-enter {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+// Cross-fade — no-flash keyframes. Timing preserved.
+@keyframes login-bg-cycle {
+  0%      { opacity: 0; transform: scale(1.00); }
+  13.33%  { opacity: 1; transform: scale(1.03); }
+  46.67%  { opacity: 1; transform: scale(1.06); }
+  60%     { opacity: 0; transform: scale(1.08); }
+  100%    { opacity: 0; transform: scale(1.08); }
+}
+
+// ---------- Login card entrance ----------
+
+@keyframes login-card-enter {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+// ---------- Login card — dark, glass, metallic ----------
+
+.login-card {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 440px;
+  padding: var(--safepick-space-7) var(--safepick-space-6) var(--safepick-space-6);
+
+  // Entrance animation — fades and rises into place once.
+  animation: login-card-enter 520ms cubic-bezier(0.16, 1, 0.3, 1) both;
+
+  background: linear-gradient(
+    155deg,
+    rgba(44, 82, 130, 0.62) 0%,
+    rgba(30, 58, 95, 0.72) 45%,
+    rgba(20, 42, 69, 0.82) 100%
+  );
+
+  backdrop-filter: blur(22px) saturate(120%);
+  -webkit-backdrop-filter: blur(22px) saturate(120%);
+
+  border-radius: var(--safepick-radius-xl);
+
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.20),
+    0 24px 48px -12px rgba(0, 0, 0, 0.45),
+    0 12px 24px -8px rgba(0, 0, 0, 0.30);
+
+  border: 1px solid transparent;
+  background-clip: padding-box;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(
+      135deg,
+      rgba(16, 185, 129, 0.55) 0%,
+      rgba(255, 255, 255, 0.15) 35%,
+      rgba(30, 58, 95, 0.55) 100%
+    );
+    -webkit-mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+            mask-composite: exclude;
+    pointer-events: none;
+  }
+}
+
+// ---------- Brand header ----------
+
+.login-card__header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-bottom: var(--safepick-space-6);
+}
+
+.login-card__logo {
+  display: block;
+  width: 88px;
+  height: auto;
+  max-width: 100%;
+  border-radius: var(--safepick-radius-md);
+  margin-bottom: var(--safepick-space-4);
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.30),
+    0 2px 4px rgba(0, 0, 0, 0.20);
+}
+
+.login-card__rule {
+  width: 40px;
+  height: 3px;
+  background: var(--safepick-accent);
+  border-radius: var(--safepick-radius-pill);
+  margin-bottom: var(--safepick-space-4);
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.45);
+}
+
+.login-card__brand {
+  margin: 0 0 var(--safepick-space-1);
+  font-size: var(--safepick-text-2xl);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+
+  background: linear-gradient(
+    120deg,
+    #7CC8FF 0%,
+    #B8E0FF 30%,
+    #A7F3D0 60%,
+    #10B981 100%
+  );
+  -webkit-background-clip: text;
+          background-clip: text;
+  -webkit-text-fill-color: transparent;
+          color: transparent;
+}
+
+.login-card__tagline {
+  margin: 0;
+  font-size: var(--safepick-text-sm);
+  color: rgba(255, 255, 255, 0.72);
+  line-height: 1.5;
+  max-width: 32ch;
+}
+
+// ---------- Form ----------
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--safepick-space-3);
+}
+
+.login-form__field {
+  width: 100%;
+
+  // Improved contrast on dark glass.
+  // Labels and outlines are brighter — the password field
+  // is now clearly visible.
+  --mdc-outlined-text-field-label-text-color: rgba(255, 255, 255, 0.88);
+  --mdc-outlined-text-field-input-text-color: #FFFFFF;
+  --mdc-outlined-text-field-caret-color: var(--safepick-accent);
+  --mdc-outlined-text-field-outline-color: rgba(255, 255, 255, 0.50);
+  --mdc-outlined-text-field-hover-outline-color: rgba(255, 255, 255, 0.72);
+  --mdc-outlined-text-field-focus-outline-color: var(--safepick-accent);
+  --mdc-outlined-text-field-focus-label-text-color: var(--safepick-accent);
+  --mat-select-enabled-trigger-text-color: #FFFFFF;
+  --mdc-outlined-text-field-container-shape: 8px;
+
+  // A faint interior surface so each field reads as a
+  // distinct input on the glass card.
+  .mat-mdc-form-field-flex {
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 8px;
+  }
+
+  // The trailing icon (password visibility toggle) on dark.
+  .mat-mdc-icon-button {
+    color: rgba(255, 255, 255, 0.72);
+
+    &:hover {
+      color: #FFFFFF;
+    }
+  }
+
+  // Error text color.
+  .mat-mdc-form-field-error {
+    color: #FCA5A5;
+  }
+}
+
+.login-form__error {
+  display: flex;
+  align-items: center;
+  gap: var(--safepick-space-2);
+  padding: var(--safepick-space-3) var(--safepick-space-4);
+  background: rgba(220, 38, 38, 0.15);
+  color: #FCA5A5;
+  border: 1px solid rgba(220, 38, 38, 0.35);
+  border-radius: var(--safepick-radius-md);
+  font-size: var(--safepick-text-sm);
+  font-weight: 500;
+
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    color: #FCA5A5;
+  }
+}
+
+.login-form__submit {
+  margin-top: var(--safepick-space-3);
+  height: 48px;
+  font-weight: 600;
+  font-size: var(--safepick-text-md);
+  letter-spacing: 0.01em;
+
+  --mdc-filled-button-container-color: transparent;
+  --mdc-filled-button-label-text-color: #FFFFFF;
+
+  background: linear-gradient(
+    135deg,
+    #10B981 0%,
+    #059669 100%
+  ) !important;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    0 6px 16px -4px rgba(16, 185, 129, 0.45),
+    0 2px 6px -2px rgba(0, 0, 0, 0.30);
+
+  transition: box-shadow var(--safepick-motion-fast) var(--safepick-ease-out),
+              transform var(--safepick-motion-fast) var(--safepick-ease-out);
+
+  &:not(:disabled):hover {
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.30),
+      0 8px 20px -4px rgba(16, 185, 129, 0.55),
+      0 2px 6px -2px rgba(0, 0, 0, 0.35);
+    transform: translateY(-1px);
+  }
+
+  &:disabled {
+    background: rgba(255, 255, 255, 0.10) !important;
+    color: rgba(255, 255, 255, 0.40) !important;
+    box-shadow: none;
+  }
+}
+
+.login-form__spinner {
+  margin-right: var(--safepick-space-2);
+  --mdc-circular-progress-active-indicator-color: #FFFFFF;
+}
+
+// ---------- Reduced motion ----------
+
+@media (prefers-reduced-motion: reduce) {
+  .login-bg,
+  .login-card {
+    animation: none;
+  }
+
+  .login-bg__layer {
+    animation: none;
+    opacity: 0;
+
+    &--first {
+      opacity: 1;
+    }
+  }
+}
+
+// ---------- Responsive ----------
+
+@media (max-width: 480px) {
+  .login-page {
+    padding: var(--safepick-space-3);
+  }
+
+  .login-card {
+    padding: var(--safepick-space-6) var(--safepick-space-4) var(--safepick-space-5);
+    border-radius: var(--safepick-radius-lg);
+  }
+
+  .login-card__logo {
+    width: 72px;
+  }
+
+  .login-card__brand {
+    font-size: var(--safepick-text-xl);
+  }
+}
+
+.login-setup-banner {
+  display: flex;
+  align-items: center;
+  gap: var(--safepick-space-2);
+  padding: var(--safepick-space-3) var(--safepick-space-4);
+  margin-bottom: var(--safepick-space-4);
+  background: rgba(16, 185, 129, 0.15);
+  color: #A7F3D0;
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  border-radius: var(--safepick-radius-md);
+  font-size: var(--safepick-text-sm);
+  font-weight: 500;
+
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    color: var(--safepick-accent);
+    flex-shrink: 0;
+  }
+}
+
+.login-card__driver-link {
+  margin: var(--safepick-space-5) 0 0;
+  text-align: center;
+  font-size: var(--safepick-text-sm);
+  color: rgba(255, 255, 255, 0.72);
+
+  a {
+    color: #A7F3D0;
+    text-decoration: none;
+    font-weight: 600;
+
+    &:hover { text-decoration: underline; }
+  }
+}

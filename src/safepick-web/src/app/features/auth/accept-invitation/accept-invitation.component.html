@@ -1,0 +1,144 @@
+<!-- ============================================================
+     AcceptInvitationComponent — 5.10-ACCEPT-b
+     ============================================================ -->
+
+<main class="accept-page">
+
+  <!-- Loading -->
+  @if (state() === 'loading') {
+    <section class="accept-card accept-card--centered">
+      <img
+        class="accept-card__logo"
+        src="assets/logo.jpg"
+        alt="SafePick SA logo"
+        width="72"
+        height="80" />
+
+      <mat-spinner diameter="36"></mat-spinner>
+      <p class="accept-card__status">Checking your invitation…</p>
+    </section>
+  }
+
+  <!-- Invalid -->
+  @if (state() === 'invalid') {
+    <section class="accept-card accept-card--centered">
+      <div class="accept-card__error-icon">
+        <mat-icon aria-hidden="true">link_off</mat-icon>
+      </div>
+
+      <h1 class="accept-card__error-title">Invitation not available</h1>
+      <p class="accept-card__error-text">{{ errorMessage() }}</p>
+
+      <a class="accept-card__button" routerLink="/login">
+        Go to sign in
+      </a>
+    </section>
+  }
+
+  <!-- Ready -->
+  @if (state() === 'ready' && invite(); as inv) {
+    <section class="accept-card">
+
+      <header class="accept-card__header">
+        <img
+          class="accept-card__logo"
+          src="assets/logo.jpg"
+          alt="SafePick SA logo"
+          width="72"
+          height="80" />
+
+        <div class="accept-card__rule" aria-hidden="true"></div>
+
+        <h1 class="accept-card__title">Set up your account</h1>
+        <p class="accept-card__subtitle">
+          You're joining <strong>{{ inv.schoolName }}</strong> as a
+          {{ inv.role }}.
+        </p>
+      </header>
+
+      <div class="accept-card__identity">
+        <mat-icon aria-hidden="true">mail_outline</mat-icon>
+        <span>{{ inv.email }}</span>
+      </div>
+
+      <form
+        class="accept-form"
+        [formGroup]="form"
+        (ngSubmit)="onSubmit()"
+        novalidate>
+
+        <!-- Password -->
+        <label class="accept-form__field">
+          <span class="accept-form__label">Password</span>
+          <div class="accept-form__input-wrap">
+            <input
+              [type]="showPassword() ? 'text' : 'password'"
+              class="accept-form__input"
+              formControlName="password"
+              placeholder="At least 8 characters"
+              autocomplete="new-password"
+              [attr.aria-invalid]="password.invalid && password.touched" />
+            <button
+              type="button"
+              class="accept-form__toggle"
+              [attr.aria-label]="showPassword() ? 'Hide password' : 'Show password'"
+              (click)="togglePassword()">
+              <mat-icon aria-hidden="true">
+                {{ showPassword() ? 'visibility_off' : 'visibility' }}
+              </mat-icon>
+            </button>
+          </div>
+          @if (password.touched && password.hasError('required')) {
+            <span class="accept-form__error">Password is required.</span>
+          } @else if (password.touched && password.hasError('minlength')) {
+            <span class="accept-form__error">Password must be at least 8 characters.</span>
+          }
+        </label>
+
+        <!-- Confirm password -->
+        <label class="accept-form__field">
+          <span class="accept-form__label">Confirm password</span>
+          <input
+            [type]="showPassword() ? 'text' : 'password'"
+            class="accept-form__input"
+            formControlName="confirmPassword"
+            placeholder="Type your password again"
+            autocomplete="new-password"
+            [attr.aria-invalid]="confirmPassword.invalid && confirmPassword.touched" />
+          @if (confirmPassword.touched && confirmPassword.hasError('required')) {
+            <span class="accept-form__error">Please confirm your password.</span>
+          } @else if (passwordsMismatch) {
+            <span class="accept-form__error">Passwords do not match.</span>
+          }
+        </label>
+
+        <!-- Session-level error -->
+        @if (errorMessage(); as msg) {
+          <div class="accept-form__alert" role="alert">
+            <mat-icon aria-hidden="true">error_outline</mat-icon>
+            <span>{{ msg }}</span>
+          </div>
+        }
+
+        <button
+          type="submit"
+          class="accept-form__submit"
+          [disabled]="submitting() || form.invalid">
+          @if (submitting()) {
+            <mat-spinner diameter="20"></mat-spinner>
+            <span>Creating your account…</span>
+          } @else {
+            <span>Create account</span>
+          }
+        </button>
+
+      </form>
+
+      <p class="accept-card__expiry">
+        This invitation expires {{ formatExpiry(inv.expiresAt) }}.
+      </p>
+
+    </section>
+  }
+
+</main>

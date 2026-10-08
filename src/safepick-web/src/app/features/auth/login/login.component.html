@@ -1,0 +1,124 @@
+<!-- ============================================================
+     LoginComponent — 5.3d+
+     Branded card with logo, brand rule, and reactive form.
+     Background rotation timing is authored in the SCSS.
+     ============================================================ -->
+
+<main class="login-page">
+
+  <!-- Rotating background stack -->
+  <div class="login-bg" aria-hidden="true">
+    @for (bg of backgrounds; track bg.src; let i = $index) {
+      <div
+        class="login-bg__layer"
+        [style.background-image]="'url(' + bg.src + ')'"
+        [class.login-bg__layer--first]="i === 0">
+      </div>
+    }
+    <div class="login-bg__overlay"></div>
+  </div>
+
+  <section class="login-card" aria-labelledby="login-title">
+
+    <!-- Brand block: logo, rule, name, tagline -->
+    <header class="login-card__header">
+      <img
+        class="login-card__logo"
+        [src]="logoPath"
+        alt="SafePick SA logo"
+        width="88"
+        height="96" />
+
+      <div class="login-card__rule" aria-hidden="true"></div>
+
+      <h1 id="login-title" class="login-card__brand">{{ brand }}</h1>
+      <p class="login-card__tagline">{{ tagline }}</p>
+    </header>
+
+    <!-- Setup complete banner -->
+    @if (setupComplete()) {
+      <div class="login-setup-banner" role="status">
+        <mat-icon aria-hidden="true">check_circle</mat-icon>
+        <span>Your account is ready. Please sign in with your new password.</span>
+      </div>
+    }
+
+    <!-- Form -->
+    <form
+      class="login-form"
+      [formGroup]="form"
+      (ngSubmit)="onSubmit()"
+      novalidate>
+
+      <!-- Email -->
+      <mat-form-field appearance="outline" class="login-form__field">
+        <mat-label>Email</mat-label>
+        <input
+          matInput
+          type="email"
+          formControlName="email"
+          autocomplete="username"
+          inputmode="email"
+          spellcheck="false"
+          [attr.aria-invalid]="email.invalid && email.touched"
+          aria-describedby="email-error" />
+        <mat-error id="email-error">
+          {{ errorFor('email') }}
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Password -->
+      <mat-form-field appearance="outline" class="login-form__field">
+        <mat-label>Password</mat-label>
+        <input
+          matInput
+          [type]="showPassword() ? 'text' : 'password'"
+          formControlName="password"
+          autocomplete="current-password"
+          [attr.aria-invalid]="password.invalid && password.touched"
+          aria-describedby="password-error" />
+        <button
+          mat-icon-button
+          matSuffix
+          type="button"
+          [attr.aria-label]="showPassword() ? 'Hide password' : 'Show password'"
+          (click)="togglePasswordVisibility()">
+          <mat-icon>{{ showPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+        <mat-error id="password-error">
+          {{ errorFor('password') }}
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Session-level error -->
+      @if (errorMessage(); as msg) {
+        <div class="login-form__error" role="alert">
+          <mat-icon aria-hidden="true">error_outline</mat-icon>
+          <span>{{ msg }}</span>
+        </div>
+      }
+
+      <!-- Submit -->
+      <button
+        mat-flat-button
+        color="primary"
+        type="submit"
+        class="login-form__submit"
+        [disabled]="form.invalid || submitting()">
+        @if (submitting()) {
+          <mat-spinner diameter="20" class="login-form__spinner"></mat-spinner>
+          <span>Signing in…</span>
+        } @else {
+          <span>Sign in</span>
+        }
+      </button>
+    </form>
+
+    <!-- Driver registration link (inserted immediately after </form>) -->
+    <p class="login-card__driver-link">
+      Are you a transport driver?
+      <a routerLink="/register-driver">Register here</a>
+    </p>
+
+  </section>
+</main>
