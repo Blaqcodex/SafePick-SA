@@ -1,0 +1,79 @@
+<!-- ============================================================
+     UnassignSheetComponent — 5.7d-3
+     ============================================================ -->
+
+<div
+  class="sheet-backdrop"
+  (click)="onBackdropClick($event)"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="sheet-title">
+
+  <div class="sheet" (click)="$event.stopPropagation()">
+
+    <div class="sheet__handle" aria-hidden="true"></div>
+
+    <div class="sheet__header">
+      <h2 id="sheet-title" class="sheet__title">Unassign learner</h2>
+      <p class="sheet__subtitle">
+        {{ assignment.learnerFullName }} · {{ assignment.classGroup }}
+      </p>
+    </div>
+
+    <div class="sheet__summary">
+      <mat-icon aria-hidden="true">directions_bus</mat-icon>
+      <span>
+        Currently assigned to
+        <strong>{{ assignment.driverFullName }}</strong>
+        ({{ assignment.vehicleRegistration }})
+      </span>
+    </div>
+
+    <p class="sheet__warning">
+      The learner will be removed from this driver's roster.
+      They will remain on the school roll but will not be on transport
+      until reassigned.
+    </p>
+
+    <form
+      class="sheet__form"
+      [formGroup]="form"
+      (ngSubmit)="onSubmit()"
+      novalidate>
+
+      <label class="sheet__field">
+        <span class="sheet__label">
+          Note <span class="sheet__optional">(optional)</span>
+        </span>
+        <textarea
+          class="sheet__textarea"
+          formControlName="note"
+          rows="2"
+          placeholder="Add any details (optional)"></textarea>
+      </label>
+
+      <div class="sheet__actions">
+        <button
+          type="submit"
+          class="sheet__button sheet__button--danger"
+          [disabled]="submitting">
+          @if (submitting) {
+            <mat-spinner diameter="20"></mat-spinner>
+            <span>Unassigning…</span>
+          } @else {
+            <span>Unassign learner</span>
+          }
+        </button>
+        <button
+          type="button"
+          class="sheet__button sheet__button--secondary"
+          [disabled]="submitting"
+          (click)="onDismiss()">
+          Back
+        </button>
+      </div>
+
+    </form>
+
+  </div>
+</div>

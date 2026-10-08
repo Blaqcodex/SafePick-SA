@@ -1,0 +1,75 @@
+<!-- ============================================================
+     DecisionSheetComponent — 5.6d
+     Bottom sheet for reject and revoke decisions.
+     ============================================================ -->
+
+<div
+  class="sheet-backdrop"
+  (click)="onBackdropClick($event)"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="sheet-title">
+
+  <div class="sheet" [class.sheet--reject]="mode === 'reject'" [class.sheet--revoke]="mode === 'revoke'" (click)="$event.stopPropagation()">
+
+    <div class="sheet__handle" aria-hidden="true"></div>
+
+    <div class="sheet__header">
+      <h2 id="sheet-title" class="sheet__title">{{ title }}</h2>
+      <p class="sheet__subtitle">
+        {{ approval.driverFullName }}
+      </p>
+      <p class="sheet__vehicle">{{ vehicleLine }}</p>
+    </div>
+
+    <form
+      class="sheet__form"
+      [formGroup]="form"
+      (ngSubmit)="onSubmit()"
+      novalidate>
+
+      <p class="sheet__question">{{ question }}</p>
+
+      <label class="sheet__field">
+        <textarea
+          class="sheet__textarea"
+          formControlName="reason"
+          rows="4"
+          [placeholder]="placeholder"
+          [attr.aria-invalid]="reason.invalid && reason.touched"></textarea>
+        @if (reason.touched && reason.hasError('required')) {
+          <span class="sheet__error">A reason is required.</span>
+        } @else if (reason.touched && reason.hasError('minlength')) {
+          <span class="sheet__error">Please provide at least a few words.</span>
+        } @else {
+          <span class="sheet__hint">
+            The driver will see this reason.
+          </span>
+        }
+      </label>
+
+      <div class="sheet__actions">
+        <button
+          type="submit"
+          class="sheet__button sheet__button--primary"
+          [disabled]="submitting || form.invalid">
+          @if (submitting) {
+            <mat-spinner diameter="20"></mat-spinner>
+            <span>Submitting…</span>
+          } @else {
+            <span>{{ confirmLabel }}</span>
+          }
+        </button>
+        <button
+          type="button"
+          class="sheet__button sheet__button--secondary"
+          [disabled]="submitting"
+          (click)="onDismiss()">
+          Back
+        </button>
+      </div>
+
+    </form>
+
+  </div>
+</div>

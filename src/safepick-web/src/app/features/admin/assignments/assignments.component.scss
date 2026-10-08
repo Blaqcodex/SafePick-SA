@@ -1,0 +1,278 @@
+// ============================================================
+// AssignmentsComponent — 5.7d-1
+// ============================================================
+
+:host { display: block; }
+
+.assignments {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.assignments__header {
+  margin-bottom: var(--safepick-space-5);
+}
+
+.assignments__title {
+  margin: 0 0 var(--safepick-space-1);
+  font-size: var(--safepick-text-2xl);
+  font-weight: 700;
+  color: var(--safepick-primary);
+  letter-spacing: -0.02em;
+}
+
+.assignments__subtitle {
+  margin: 0;
+  font-size: var(--safepick-text-sm);
+  color: var(--safepick-text-muted);
+}
+
+.assignments__state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--safepick-space-4);
+  padding: var(--safepick-space-7) var(--safepick-space-5);
+  background: var(--safepick-surface);
+  border-radius: var(--safepick-radius-lg);
+  box-shadow: var(--safepick-shadow-sm);
+  text-align: center;
+
+  p {
+    margin: 0;
+    font-size: var(--safepick-text-md);
+    color: var(--safepick-text-muted);
+  }
+
+  mat-icon {
+    font-size: 40px;
+    width: 40px;
+    height: 40px;
+  }
+
+  &--error {
+    mat-icon { color: var(--safepick-danger); }
+    p { color: var(--safepick-danger); }
+  }
+
+  &--empty {
+    mat-icon { color: var(--safepick-accent); }
+  }
+}
+
+.assignments__state-hint {
+  font-size: var(--safepick-text-sm) !important;
+  color: var(--safepick-metal-2) !important;
+}
+
+.assignments__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--safepick-space-3);
+}
+
+.assignment-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--safepick-space-3);
+  padding: var(--safepick-space-4);
+  background: var(--safepick-surface);
+  border-radius: var(--safepick-radius-lg);
+  box-shadow: var(--safepick-shadow-sm);
+  border: 1px solid var(--safepick-border);
+  border-left: 3px solid var(--safepick-accent);
+}
+
+.assignment-card__top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--safepick-space-3);
+}
+
+.assignment-card__identity {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.assignment-card__name {
+  font-size: var(--safepick-text-lg);
+  font-weight: 600;
+  color: var(--safepick-text);
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+
+.assignment-card__class {
+  font-family: var(--safepick-font-mono);
+  font-size: var(--safepick-text-sm);
+  color: var(--safepick-text-muted);
+}
+
+.assignment-card__driver {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: var(--safepick-space-2) var(--safepick-space-3);
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  border-radius: var(--safepick-radius-md);
+  font-size: var(--safepick-text-sm);
+  color: var(--safepick-accent-dark);
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+  }
+
+  strong { font-weight: 600; }
+}
+
+.assignment-card__reg {
+  font-family: var(--safepick-font-mono);
+}
+
+.assignment-card__dot {
+  opacity: 0.5;
+  margin: 0 4px;
+}
+
+.assignment-card__meta {
+  font-size: var(--safepick-text-xs);
+  color: var(--safepick-text-muted);
+}
+
+// ---------- Status pill (shared style) ----------
+
+.status-pill {
+  display: inline-block;
+  flex-shrink: 0;
+  padding: 4px 10px;
+  border-radius: var(--safepick-radius-pill);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  border: 1px solid transparent;
+
+  &--success {
+    background: var(--safepick-accent-light);
+    color: var(--safepick-accent-dark);
+    border-color: rgba(16, 185, 129, 0.35);
+  }
+}
+
+// ---------- Action error banner ----------
+
+.action-error {
+  display: flex;
+  align-items: center;
+  gap: var(--safepick-space-3);
+  padding: var(--safepick-space-3) var(--safepick-space-4);
+  margin-bottom: var(--safepick-space-4);
+  background: var(--safepick-danger-light);
+  color: var(--safepick-danger);
+  border: 1px solid rgba(220, 38, 38, 0.3);
+  border-radius: var(--safepick-radius-md);
+  font-size: var(--safepick-text-sm);
+  font-weight: 500;
+
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+  }
+}
+
+.action-error__text {
+  flex: 1;
+  min-width: 0;
+}
+
+.action-error__dismiss {
+  background: transparent;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: var(--safepick-radius-sm);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+
+  &:hover {
+    background: rgba(220, 38, 38, 0.12);
+  }
+}
+
+// ---------- Card actions ----------
+
+.assignment-card__actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--safepick-space-2);
+  margin-top: var(--safepick-space-1);
+}
+
+.assignment-card__action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--safepick-space-2);
+  width: 100%;
+  height: 44px;
+  border: none;
+  border-radius: var(--safepick-radius-md);
+  font-family: inherit;
+  font-size: var(--safepick-text-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--safepick-motion-fast) var(--safepick-ease-out);
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+
+  &--secondary {
+    background: var(--safepick-surface-alt);
+    color: var(--safepick-metal-3);
+    border: 1px solid var(--safepick-border);
+
+    &:hover {
+      background: #F3F4F6;
+      color: var(--safepick-text);
+    }
+
+    &:active { transform: translateY(1px); }
+  }
+
+  &--danger {
+    background: transparent;
+    color: var(--safepick-danger);
+    border: 1px solid rgba(220, 38, 38, 0.4);
+
+    &:hover {
+      background: var(--safepick-danger-light);
+    }
+
+    &:active { transform: translateY(1px); }
+  }
+}

@@ -1,0 +1,313 @@
+<!-- ============================================================
+     LearnersComponent — 5.7d-4
+     Add, set contact, and assign to driver are all live.
+     ============================================================ -->
+
+<div class="learners">
+
+  <header class="learners__header">
+    <div class="learners__title-row">
+      <div>
+        <h1 class="learners__title">Learners</h1>
+        @if (state() === 'ready') {
+          <p class="learners__subtitle">
+            {{ totalCount() }}
+            {{ totalCount() === 1 ? 'learner' : 'learners' }}
+            registered at your school.
+          </p>
+        }
+      </div>
+
+      <button
+        type="button"
+        class="learners__add"
+        (click)="openAddSheet()">
+        <mat-icon aria-hidden="true">person_add</mat-icon>
+        <span>Add Learner</span>
+      </button>
+    </div>
+  </header>
+
+  @if (actionError(); as msg) {
+    <div class="action-error" role="alert">
+      <mat-icon aria-hidden="true">error_outline</mat-icon>
+      <span class="action-error__text">{{ msg }}</span>
+      <button
+        type="button"
+        class="action-error__dismiss"
+        (click)="actionError.set(null)"
+        aria-label="Dismiss">
+        <mat-icon aria-hidden="true">close</mat-icon>
+      </button>
+    </div>
+  }
+
+  <!-- Transport window card -->
+  <section class="transport-window">
+    @if (transportWindowLoading()) {
+      <div class="transport-window__loading">
+        <mat-spinner diameter="20"></mat-spinner>
+        <span>Loading transport window…</span>
+      </div>
+    } @else {
+      @if (transportWindow(); as tw) {
+        <div class="transport-window__icon">
+          <mat-icon aria-hidden="true">schedule</mat-icon>
+        </div>
+        <div class="transport-window__body">
+          <div class="transport-window__title">Transport window</div>
+          <div class="transport-window__value">
+            {{ formatTimeShort(tw.opensAt) }} – {{ formatTimeShort(tw.closesAt) }}
+            <span class="transport-window__dot">·</span>
+            grace {{ tw.graceMinutes }} min
+          </div>
+          <div class="transport-window__hint">
+            Reconciliation runs after {{ formatTimeShort(tw.reconciliationAt) }}.
+          </div>
+        </div>
+        <button
+          type="button"
+          class="transport-window__action"
+          (click)="openTransportWindowSheet()">
+          <mat-icon aria-hidden="true">edit</mat-icon>
+          <span>Edit</span>
+        </button>
+      } @else {
+        <div class="transport-window__icon transport-window__icon--warn">
+          <mat-icon aria-hidden="true">schedule</mat-icon>
+        </div>
+        <div class="transport-window__body">
+          <div class="transport-window__title">Transport window</div>
+          <div class="transport-window__value transport-window__value--warn">
+            Not configured yet
+          </div>
+          <div class="transport-window__hint">
+            Reconciliation cannot run until a window is set.
+          </div>
+        </div>
+        <button
+          type="button"
+          class="transport-window__action transport-window__action--primary"
+          (click)="openTransportWindowSheet()">
+          <mat-icon aria-hidden="true">add</mat-icon>
+          <span>Set window</span>
+        </button>
+      }
+    }
+  </section>
+
+  @if (state() === 'ready') {
+    <div class="learners__toolbar">
+      <div class="learners__search">
+        <mat-icon aria-hidden="true" class="learners__search-icon">search</mat-icon>
+        <input
+          type="text"
+          class="learners__search-input"
+          placeholder="Search by name or class…"
+          [value]="searchTerm()"
+          (input)="onSearchInput($any($event.target).value)"
+          aria-label="Search learners" />
+        @if (searchTerm()) {
+          <button
+            type="button"
+            class="learners__search-clear"
+            (click)="clearSearch()"
+            aria-label="Clear search">
+            <mat-icon aria-hidden="true">close</mat-icon>
+          </button>
+        }
+      </div>
+    </div>
+
+    <nav class="learners__tabs" role="tablist" aria-label="Filter by status">
+      @for (tab of tabs; track tab.value) {
+        <button
+          type="button"
+          role="tab"
+          class="learners__tab"
+          [class.learners__tab--active]="activeTab() === tab.value"
+          [attr.aria-selected]="activeTab() === tab.value"
+          (click)="setTab(tab.value)">
+          {{ tab.label }}
+        </button>
+      }
+    </nav>
+  }
+
+  @if (state() === 'loading') {
+    <div class="learners__state learners__state--loading">
+      <mat-spinner diameter="36"></mat-spinner>
+      <p>Loading learners…</p>
+    </div>
+  }
+
+  @if (state() === 'error') {
+    <div class="learners__state learners__state--error" role="alert">
+      <mat-icon aria-hidden="true">error_outline</mat-icon>
+      <p>{{ errorMessage() }}</p>
+      <button mat-flat-button color="primary" (click)="load()">
+        Try again
+      </button>
+    </div>
+  }
+
+  @if (state() === 'ready' && totalCount() === 0) {
+    <div class="learners__state learners__state--empty">
+      <mat-icon aria-hidden="true">groups</mat-icon>
+      <p>No learners registered yet.</p>
+      <p class="learners__state-hint">
+        Click “Add Learner” to register the first learner at your school.
+      </p>
+    </div>
+  }
+
+  @if (state() === 'ready' && totalCount() > 0 && !hasVisibleLearners()) {
+    <div class="learners__state learners__state--empty">
+      <mat-icon aria-hidden="true">search_off</mat-icon>
+      @if (isSearching()) {
+        <p>No learners match “{{ searchTerm() }}”.</p>
+      } @else {
+        <p>No {{ activeTab().toLowerCase() }} learners.</p>
+      }
+    </div>
+  }
+
+  @if (state() === 'ready' && hasVisibleLearners()) {
+    <ul class="learners__list">
+      @for (row of visibleLearners(); track row.learner.learnerId) {
+        <li
+          class="learner-card"
+          [class.learner-card--no-contact]="row.displayState === 'NoContact'"
+          [class.learner-card--unassigned]="row.displayState === 'Unassigned'"
+          [class.learner-card--assigned]="row.displayState === 'Assigned'"
+          [class.learner-card--inactive]="row.displayState === 'Inactive'">
+
+          <div class="learner-card__top">
+            <div class="learner-card__identity">
+              <div class="learner-card__name">{{ row.learner.fullName }}</div>
+              <div class="learner-card__class">{{ row.classLabel }}</div>
+            </div>
+
+            <span
+              class="status-pill"
+              [class.status-pill--success]="row.displayState === 'Assigned'"
+              [class.status-pill--warning]="row.displayState === 'Unassigned'"
+              [class.status-pill--danger]="row.displayState === 'NoContact'"
+              [class.status-pill--neutral]="row.displayState === 'Inactive'">
+              {{ row.displayLabel }}
+            </span>
+          </div>
+
+          @if (row.learner.parentContact; as pc) {
+            <div class="learner-card__contact">
+              <div class="learner-card__contact-row">
+                <mat-icon aria-hidden="true">mail_outline</mat-icon>
+                <span>{{ pc.email }}</span>
+              </div>
+              @if (pc.phone) {
+                <div class="learner-card__contact-row">
+                  <mat-icon aria-hidden="true">phone</mat-icon>
+                  <span>{{ pc.phone }}</span>
+                </div>
+              }
+              @if (pc.name) {
+                <div class="learner-card__contact-row">
+                  <mat-icon aria-hidden="true">person_outline</mat-icon>
+                  <span>{{ pc.name }}</span>
+                </div>
+              }
+            </div>
+          } @else {
+            <div class="learner-card__contact learner-card__contact--missing">
+              <mat-icon aria-hidden="true">person_off</mat-icon>
+              <span>No parent contact set — assignment is blocked.</span>
+            </div>
+          }
+
+          @if (row.learner.currentAssignmentId && row.learner.currentDriverName) {
+            <div class="learner-card__assignment">
+              <mat-icon aria-hidden="true">directions_bus</mat-icon>
+              <span>
+                Assigned to <strong>{{ row.learner.currentDriverName }}</strong>
+                @if (row.learner.currentVehicleRegistration) {
+                  ({{ row.learner.currentVehicleRegistration }})
+                }
+              </span>
+            </div>
+          }
+
+          <!-- Actions -->
+          @if (row.displayState === 'NoContact') {
+            <div class="learner-card__actions">
+              <button
+                type="button"
+                class="learner-card__action learner-card__action--primary"
+                (click)="openContactSheet(row.learner)">
+                <mat-icon aria-hidden="true">person_add</mat-icon>
+                <span>Set parent contact</span>
+              </button>
+            </div>
+          }
+
+          @if (row.displayState === 'Unassigned') {
+            <div class="learner-card__actions">
+              <button
+                type="button"
+                class="learner-card__action learner-card__action--primary"
+                (click)="openAssignSheet(row.learner)">
+                <mat-icon aria-hidden="true">directions_bus</mat-icon>
+                <span>Assign to driver</span>
+              </button>
+            </div>
+          }
+
+        </li>
+      }
+    </ul>
+  }
+
+  <!-- Add learner sheet -->
+  @if (activeSheet() === 'add') {
+    <app-add-learner-sheet
+      [submitting]="sheetSubmitting()"
+      (submit)="submitAddLearner($event)"
+      (dismiss)="closeSheet()">
+    </app-add-learner-sheet>
+  }
+
+  <!-- Parent contact sheet -->
+  @if (activeSheet() === 'contact' && contactSheetLearner(); as learner) {
+    <app-parent-contact-sheet
+      [learnerName]="learner.fullName"
+      [submitting]="sheetSubmitting()"
+      (submit)="submitParentContact($event)"
+      (dismiss)="closeSheet()">
+    </app-parent-contact-sheet>
+  }
+
+  <!-- Assign to driver sheet -->
+  @if (activeSheet() === 'assign' && assignSheetLearner(); as learner) {
+    @if (auth.schoolId(); as schoolId) {
+      <app-assign-driver-sheet
+        [schoolId]="schoolId"
+        [learnerName]="learner.fullName"
+        [learnerClassGroup]="classLabel(learner)"
+        mode="assign"
+        [submitting]="sheetSubmitting()"
+        (submit)="submitAssign($event)"
+        (dismiss)="closeSheet()">
+      </app-assign-driver-sheet>
+    }
+  }
+
+  <!-- Transport window sheet -->
+  @if (activeSheet() === 'transport-window') {
+    <app-transport-window-sheet
+      [existing]="transportWindow()"
+      [submitting]="transportWindowSubmitting()"
+      (submit)="submitTransportWindow($event)"
+      (dismiss)="closeSheet()">
+    </app-transport-window-sheet>
+  }
+
+</div>

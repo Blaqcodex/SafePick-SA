@@ -1,0 +1,73 @@
+<!-- ============================================================
+     ResolveSheetComponent — 5.9d
+     ============================================================ -->
+
+<div
+  class="sheet-backdrop"
+  (click)="onBackdropClick($event)"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="sheet-title">
+
+  <div class="sheet" (click)="$event.stopPropagation()">
+
+    <div class="sheet__handle" aria-hidden="true"></div>
+
+    <div class="sheet__header">
+      <h2 id="sheet-title" class="sheet__title">Resolve gap</h2>
+      <p class="sheet__subtitle">{{ gap.learnerFullName }} · {{ gap.classGroup }}</p>
+    </div>
+
+    <form
+      class="sheet__form"
+      [formGroup]="form"
+      (ngSubmit)="onSubmit()"
+      novalidate>
+
+      <label class="sheet__field">
+        <span class="sheet__label">
+          What happened to this learner during the window?
+          <span class="sheet__required">*</span>
+        </span>
+        <textarea
+          class="sheet__textarea"
+          formControlName="resolution"
+          rows="4"
+          placeholder="e.g. Parent collected the learner directly. Confirmed with the school office at 08:15."
+          [attr.aria-invalid]="resolution.invalid && resolution.touched"></textarea>
+        @if (resolution.touched && resolution.hasError('required')) {
+          <span class="sheet__error">A resolution is required.</span>
+        } @else if (resolution.touched && resolution.hasError('minlength')) {
+          <span class="sheet__error">Please provide a meaningful explanation.</span>
+        } @else {
+          <span class="sheet__hint">
+            The resolution is recorded permanently on the custody gap.
+          </span>
+        }
+      </label>
+
+      <div class="sheet__actions">
+        <button
+          type="submit"
+          class="sheet__button sheet__button--primary"
+          [disabled]="submitting || form.invalid">
+          @if (submitting) {
+            <mat-spinner diameter="20"></mat-spinner>
+            <span>Resolving…</span>
+          } @else {
+            <span>Resolve gap</span>
+          }
+        </button>
+        <button
+          type="button"
+          class="sheet__button sheet__button--secondary"
+          [disabled]="submitting"
+          (click)="onDismiss()">
+          Back
+        </button>
+      </div>
+
+    </form>
+
+  </div>
+</div>

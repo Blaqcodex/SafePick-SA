@@ -1,0 +1,63 @@
+<!-- ============================================================
+     InvestigateSheetComponent — 5.9c
+     ============================================================ -->
+
+<div
+  class="sheet-backdrop"
+  (click)="onBackdropClick($event)"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="sheet-title">
+
+  <div class="sheet" (click)="$event.stopPropagation()">
+
+    <div class="sheet__handle" aria-hidden="true"></div>
+
+    <div class="sheet__header">
+      <h2 id="sheet-title" class="sheet__title">Begin investigation</h2>
+      <p class="sheet__subtitle">{{ gap.learnerFullName }} · {{ gap.classGroup }}</p>
+    </div>
+
+    <form
+      class="sheet__form"
+      [formGroup]="form"
+      (ngSubmit)="onSubmit()"
+      novalidate>
+
+      <label class="sheet__field">
+        <span class="sheet__label">
+          What are you doing to investigate this gap?
+        </span>
+        <textarea
+          class="sheet__textarea"
+          formControlName="notes"
+          rows="4"
+          placeholder="e.g. Called the school office to check whether the learner was marked absent that day…"></textarea>
+        <span class="sheet__hint">Optional — you can add notes later.</span>
+      </label>
+
+      <div class="sheet__actions">
+        <button
+          type="submit"
+          class="sheet__button sheet__button--primary"
+          [disabled]="submitting">
+          @if (submitting) {
+            <mat-spinner diameter="20"></mat-spinner>
+            <span>Starting…</span>
+          } @else {
+            <span>Begin investigation</span>
+          }
+        </button>
+        <button
+          type="button"
+          class="sheet__button sheet__button--secondary"
+          [disabled]="submitting"
+          (click)="onDismiss()">
+          Back
+        </button>
+      </div>
+
+    </form>
+
+  </div>
+</div>

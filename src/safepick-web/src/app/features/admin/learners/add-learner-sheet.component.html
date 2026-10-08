@@ -1,0 +1,104 @@
+<!-- ============================================================
+     AddLearnerSheetComponent — 5.7c
+     ============================================================ -->
+
+<div
+  class="sheet-backdrop"
+  (click)="onBackdropClick($event)"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="sheet-title">
+
+  <div class="sheet" (click)="$event.stopPropagation()">
+
+    <div class="sheet__handle" aria-hidden="true"></div>
+
+    <div class="sheet__header">
+      <h2 id="sheet-title" class="sheet__title">Add learner</h2>
+      <p class="sheet__subtitle">
+        Register a new learner on your school’s roll.
+      </p>
+    </div>
+
+    <form
+      class="sheet__form"
+      [formGroup]="form"
+      (ngSubmit)="onSubmit()"
+      novalidate>
+
+      <!-- Full name -->
+      <label class="sheet__field">
+        <span class="sheet__label">Full name</span>
+        <input
+          type="text"
+          class="sheet__input"
+          formControlName="fullName"
+          placeholder="e.g. Ayanda Dlamini"
+          autocomplete="name"
+          [attr.aria-invalid]="fullName.invalid && fullName.touched" />
+        @if (fullName.touched && fullName.hasError('required')) {
+          <span class="sheet__error">Full name is required.</span>
+        } @else if (fullName.touched && fullName.hasError('minlength')) {
+          <span class="sheet__error">Name is too short.</span>
+        }
+      </label>
+
+      <!-- Grade + Class letter -->
+      <div class="sheet__row">
+        <label class="sheet__field sheet__field--grade">
+          <span class="sheet__label">Grade</span>
+          <input
+            type="number"
+            class="sheet__input"
+            formControlName="grade"
+            min="1"
+            max="12"
+            inputmode="numeric"
+            [attr.aria-invalid]="grade.invalid && grade.touched" />
+          @if (grade.touched && grade.invalid) {
+            <span class="sheet__error">Grade must be 1–12.</span>
+          }
+        </label>
+
+        <label class="sheet__field sheet__field--letter">
+          <span class="sheet__label">Class</span>
+          <input
+            type="text"
+            class="sheet__input sheet__input--letter"
+            formControlName="classLetter"
+            maxlength="1"
+            placeholder="B"
+            autocomplete="off"
+            (input)="onClassLetterInput($event)"
+            [attr.aria-invalid]="classLetter.invalid && classLetter.touched" />
+          @if (classLetter.touched && classLetter.invalid) {
+            <span class="sheet__error">A–Z only.</span>
+          }
+        </label>
+      </div>
+
+      <div class="sheet__actions">
+        <button
+          type="submit"
+          class="sheet__button sheet__button--primary"
+          [disabled]="submitting || form.invalid">
+          @if (submitting) {
+            <mat-spinner diameter="20"></mat-spinner>
+            <span>Creating…</span>
+          } @else {
+            <span>Create learner</span>
+          }
+        </button>
+        <button
+          type="button"
+          class="sheet__button sheet__button--secondary"
+          [disabled]="submitting"
+          (click)="onDismiss()">
+          Back
+        </button>
+      </div>
+
+    </form>
+
+  </div>
+</div>

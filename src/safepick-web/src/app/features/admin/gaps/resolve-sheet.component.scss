@@ -1,0 +1,181 @@
+// ============================================================
+// ResolveSheetComponent — 5.9d
+// ============================================================
+
+:host { display: contents; }
+
+.sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  animation: sheet-backdrop-in 200ms ease-out both;
+}
+
+@keyframes sheet-backdrop-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.sheet {
+  width: 100%;
+  max-width: 560px;
+  background: var(--safepick-surface);
+  border-top-left-radius: var(--safepick-radius-xl);
+  border-top-right-radius: var(--safepick-radius-xl);
+  padding: var(--safepick-space-3) var(--safepick-space-5) var(--safepick-space-5);
+  box-shadow: 0 -20px 40px -12px rgba(0, 0, 0, 0.30);
+  animation: sheet-in 260ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  max-height: 90vh;
+  overflow-y: auto;
+
+  @media (min-width: 640px) {
+    margin: 0 auto var(--safepick-space-5);
+    border-radius: var(--safepick-radius-xl);
+  }
+}
+
+@keyframes sheet-in {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+
+.sheet__handle {
+  width: 44px;
+  height: 4px;
+  background: var(--safepick-metal-2);
+  border-radius: var(--safepick-radius-pill);
+  margin: 0 auto var(--safepick-space-3);
+}
+
+.sheet__header {
+  margin-bottom: var(--safepick-space-4);
+}
+
+.sheet__title {
+  margin: 0 0 var(--safepick-space-1);
+  font-size: var(--safepick-text-xl);
+  font-weight: 700;
+  color: var(--safepick-accent-dark);
+  letter-spacing: -0.01em;
+}
+
+.sheet__subtitle {
+  margin: 0;
+  font-size: var(--safepick-text-sm);
+  color: var(--safepick-text-muted);
+}
+
+.sheet__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--safepick-space-4);
+}
+
+.sheet__field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sheet__label {
+  font-size: var(--safepick-text-sm);
+  font-weight: 600;
+  color: var(--safepick-text);
+}
+
+.sheet__required {
+  color: var(--safepick-danger);
+  font-weight: 700;
+}
+
+.sheet__textarea {
+  width: 100%;
+  padding: var(--safepick-space-3);
+  border: 1px solid var(--safepick-border);
+  border-radius: var(--safepick-radius-md);
+  font-family: inherit;
+  font-size: var(--safepick-text-md);
+  resize: vertical;
+  color: var(--safepick-text);
+  min-height: 100px;
+
+  &:focus {
+    outline: none;
+    border-color: var(--safepick-accent);
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+  }
+
+  &[aria-invalid='true'] {
+    border-color: var(--safepick-danger);
+  }
+}
+
+.sheet__error {
+  font-size: var(--safepick-text-xs);
+  color: var(--safepick-danger);
+}
+
+.sheet__hint {
+  font-size: var(--safepick-text-xs);
+  color: var(--safepick-text-muted);
+}
+
+.sheet__actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--safepick-space-2);
+  margin-top: var(--safepick-space-2);
+}
+
+.sheet__button {
+  width: 100%;
+  height: 52px;
+  border: none;
+  border-radius: var(--safepick-radius-md);
+  font-family: inherit;
+  font-size: var(--safepick-text-md);
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--safepick-space-2);
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+  }
+
+  &--primary {
+    background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+    color: #FFFFFF;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.22),
+      0 4px 10px -2px rgba(16, 185, 129, 0.35);
+
+    mat-spinner {
+      --mdc-circular-progress-active-indicator-color: #FFFFFF;
+    }
+  }
+
+  &--secondary {
+    background: transparent;
+    color: var(--safepick-metal-3);
+    border: 1px solid var(--safepick-border);
+
+    &:not(:disabled):hover {
+      background: var(--safepick-surface-alt);
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sheet-backdrop,
+  .sheet { animation: none; }
+}

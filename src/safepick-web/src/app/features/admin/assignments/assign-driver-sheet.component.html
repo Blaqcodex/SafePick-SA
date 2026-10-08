@@ -1,0 +1,109 @@
+<!-- ============================================================
+     AssignDriverSheetComponent — 5.7d-2
+     ============================================================ -->
+
+<div
+  class="sheet-backdrop"
+  (click)="onBackdropClick($event)"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="sheet-title">
+
+  <div class="sheet" (click)="$event.stopPropagation()">
+
+    <div class="sheet__handle" aria-hidden="true"></div>
+
+    <div class="sheet__header">
+      <h2 id="sheet-title" class="sheet__title">{{ title }}</h2>
+      <p class="sheet__subtitle">{{ subtitle }}</p>
+    </div>
+
+    <!-- Loading -->
+    @if (loadingDrivers()) {
+      <div class="sheet__loading">
+        <mat-spinner diameter="28"></mat-spinner>
+        <p>Loading approved drivers…</p>
+      </div>
+    }
+
+    <!-- Error -->
+    @if (driversError(); as err) {
+      <div class="sheet__error-block" role="alert">
+        <mat-icon aria-hidden="true">error_outline</mat-icon>
+        <p>{{ err }}</p>
+        <button type="button" class="sheet__retry" (click)="loadDrivers()">
+          Try again
+        </button>
+      </div>
+    }
+
+    <!-- Empty -->
+    @if (!loadingDrivers() && !driversError() && drivers().length === 0) {
+      <div class="sheet__empty">
+        <mat-icon aria-hidden="true">person_off</mat-icon>
+        <p>No approved drivers available.</p>
+        <p class="sheet__empty-hint">
+          Approve a driver first, then return to assign this learner.
+        </p>
+      </div>
+    }
+
+    <!-- Driver picker -->
+    @if (!loadingDrivers() && !driversError() && drivers().length > 0) {
+      <form
+        class="sheet__form"
+        [formGroup]="form"
+        (ngSubmit)="onSubmit()"
+        novalidate>
+
+        <p class="sheet__question">Choose a driver</p>
+
+        <div class="sheet__options" role="radiogroup">
+          @for (driver of drivers(); track driver.driverId) {
+            <label
+              class="sheet__option"
+              [class.sheet__option--selected]="driverId.value === driver.driverId">
+              <input
+                type="radio"
+                formControlName="driverId"
+                [value]="driver.driverId" />
+              <span class="sheet__option-content">
+                <span class="sheet__option-name">{{ driver.driverFullName }}</span>
+                <span class="sheet__option-vehicle">
+                  <span class="sheet__option-reg">{{ driver.vehicle.registration }}</span>
+                  <span class="sheet__option-dot">·</span>
+                  <span>{{ driver.vehicle.make }} {{ driver.vehicle.model }}</span>
+                  <span class="sheet__option-dot">·</span>
+                  <span>{{ driver.vehicle.capacity }} seats</span>
+                </span>
+              </span>
+            </label>
+          }
+        </div>
+
+        <div class="sheet__actions">
+          <button
+            type="submit"
+            class="sheet__button sheet__button--primary"
+            [disabled]="submitting || form.invalid">
+            @if (submitting) {
+              <mat-spinner diameter="20"></mat-spinner>
+              <span>Working…</span>
+            } @else {
+              <span>{{ confirmLabel }}</span>
+            }
+          </button>
+          <button
+            type="button"
+            class="sheet__button sheet__button--secondary"
+            [disabled]="submitting"
+            (click)="onDismiss()">
+            Back
+          </button>
+        </div>
+
+      </form>
+    }
+
+  </div>
+</div>

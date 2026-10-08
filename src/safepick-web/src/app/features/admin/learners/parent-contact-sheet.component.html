@@ -1,0 +1,114 @@
+<!-- ============================================================
+     ParentContactSheetComponent — 5.7c
+     ============================================================ -->
+
+<div
+  class="sheet-backdrop"
+  (click)="onBackdropClick($event)"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="sheet-title">
+
+  <div class="sheet" (click)="$event.stopPropagation()">
+
+    <div class="sheet__handle" aria-hidden="true"></div>
+
+    <div class="sheet__header">
+      <h2 id="sheet-title" class="sheet__title">Set parent contact</h2>
+      @if (learnerName) {
+        <p class="sheet__subtitle">{{ learnerName }}</p>
+      }
+      <p class="sheet__note">
+        A learner cannot be assigned to a vehicle without a parent contact.
+      </p>
+    </div>
+
+    <form
+      class="sheet__form"
+      [formGroup]="form"
+      (ngSubmit)="onSubmit()"
+      novalidate>
+
+      <!-- Email -->
+      <label class="sheet__field">
+        <span class="sheet__label">Email <span class="sheet__required">*</span></span>
+        <input
+          type="email"
+          class="sheet__input"
+          formControlName="email"
+          placeholder="parent@example.com"
+          autocomplete="email"
+          inputmode="email"
+          spellcheck="false"
+          [attr.aria-invalid]="email.invalid && email.touched" />
+        @if (email.touched && email.hasError('required')) {
+          <span class="sheet__error">Email is required.</span>
+        } @else if (email.touched && email.hasError('email')) {
+          <span class="sheet__error">Please enter a valid email address.</span>
+        }
+      </label>
+
+      <!-- Phone -->
+      <label class="sheet__field">
+        <span class="sheet__label">Phone <span class="sheet__optional">(optional)</span></span>
+        <input
+          type="tel"
+          class="sheet__input"
+          formControlName="phone"
+          placeholder="+27 82 123 4567"
+          autocomplete="tel"
+          inputmode="tel" />
+      </label>
+
+      <!-- Parent name -->
+      <label class="sheet__field">
+        <span class="sheet__label">Parent name <span class="sheet__optional">(optional)</span></span>
+        <input
+          type="text"
+          class="sheet__input"
+          formControlName="name"
+          placeholder="e.g. Mrs Dlamini"
+          autocomplete="name" />
+      </label>
+
+      <!-- POPIA consent -->
+      <label class="sheet__consent">
+        <input
+          type="checkbox"
+          class="sheet__consent-input"
+          formControlName="consentRecorded" />
+        <span class="sheet__consent-text">
+          The parent or guardian has consented to storing their contact
+          details for the purpose of learner transport notifications.
+          <span class="sheet__consent-note">(POPIA consent)</span>
+        </span>
+      </label>
+      @if (consent.touched && consent.hasError('requiredTrue')) {
+        <span class="sheet__error">Consent is required.</span>
+      }
+
+      <div class="sheet__actions">
+        <button
+          type="submit"
+          class="sheet__button sheet__button--primary"
+          [disabled]="submitting || form.invalid">
+          @if (submitting) {
+            <mat-spinner diameter="20"></mat-spinner>
+            <span>Saving…</span>
+          } @else {
+            <span>Save contact</span>
+          }
+        </button>
+        <button
+          type="button"
+          class="sheet__button sheet__button--secondary"
+          [disabled]="submitting"
+          (click)="onDismiss()">
+          Back
+        </button>
+      </div>
+
+    </form>
+
+  </div>
+</div>

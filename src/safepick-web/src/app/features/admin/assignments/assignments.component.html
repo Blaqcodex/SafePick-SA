@@ -1,0 +1,139 @@
+<!-- ============================================================
+     AssignmentsComponent — 5.7d-3
+     Reassign and unassign are both live.
+     ============================================================ -->
+
+<div class="assignments">
+
+  <header class="assignments__header">
+    <h1 class="assignments__title">Assignments</h1>
+    @if (state() === 'ready') {
+      <p class="assignments__subtitle">
+        @if (count() === 0) {
+          No learners currently assigned.
+        } @else {
+          {{ count() }}
+          {{ count() === 1 ? 'learner' : 'learners' }}
+          currently assigned to drivers.
+        }
+      </p>
+    }
+  </header>
+
+  @if (actionError(); as msg) {
+    <div class="action-error" role="alert">
+      <mat-icon aria-hidden="true">error_outline</mat-icon>
+      <span class="action-error__text">{{ msg }}</span>
+      <button
+        type="button"
+        class="action-error__dismiss"
+        (click)="actionError.set(null)"
+        aria-label="Dismiss">
+        <mat-icon aria-hidden="true">close</mat-icon>
+      </button>
+    </div>
+  }
+
+  @if (state() === 'loading') {
+    <div class="assignments__state assignments__state--loading">
+      <mat-spinner diameter="36"></mat-spinner>
+      <p>Loading assignments…</p>
+    </div>
+  }
+
+  @if (state() === 'error') {
+    <div class="assignments__state assignments__state--error" role="alert">
+      <mat-icon aria-hidden="true">error_outline</mat-icon>
+      <p>{{ errorMessage() }}</p>
+      <button mat-flat-button color="primary" (click)="load()">
+        Try again
+      </button>
+    </div>
+  }
+
+  @if (state() === 'ready' && !hasAssignments()) {
+    <div class="assignments__state assignments__state--empty">
+      <mat-icon aria-hidden="true">directions_bus</mat-icon>
+      <p>No learners are currently assigned to drivers.</p>
+      <p class="assignments__state-hint">
+        Assign a learner from the Learners page.
+      </p>
+    </div>
+  }
+
+  @if (state() === 'ready' && hasAssignments()) {
+    <ul class="assignments__list">
+      @for (a of assignments(); track a.assignmentId) {
+        <li class="assignment-card">
+
+          <div class="assignment-card__top">
+            <div class="assignment-card__identity">
+              <div class="assignment-card__name">{{ a.learnerFullName }}</div>
+              <div class="assignment-card__class">{{ a.classGroup }}</div>
+            </div>
+
+            <span class="status-pill status-pill--success">Active</span>
+          </div>
+
+          <div class="assignment-card__driver">
+            <mat-icon aria-hidden="true">directions_bus</mat-icon>
+            <span>
+              <strong>{{ a.driverFullName }}</strong>
+              <span class="assignment-card__dot">·</span>
+              <span class="assignment-card__reg">{{ a.vehicleRegistration }}</span>
+            </span>
+          </div>
+
+          <div class="assignment-card__meta">
+            Assigned since {{ formatDate(a.validFrom) }}
+          </div>
+
+          <div class="assignment-card__actions">
+            <button
+              type="button"
+              class="assignment-card__action assignment-card__action--secondary"
+              (click)="openReassign(a)">
+              <mat-icon aria-hidden="true">swap_horiz</mat-icon>
+              <span>Reassign</span>
+            </button>
+            <button
+              type="button"
+              class="assignment-card__action assignment-card__action--danger"
+              (click)="openUnassign(a)">
+              <mat-icon aria-hidden="true">link_off</mat-icon>
+              <span>Unassign</span>
+            </button>
+          </div>
+
+        </li>
+      }
+    </ul>
+  }
+
+  <!-- Reassign sheet -->
+  @if (reassignFor(); as a) {
+    @if (auth.schoolId(); as schoolId) {
+      <app-assign-driver-sheet
+        [schoolId]="schoolId"
+        [learnerName]="a.learnerFullName"
+        [learnerClassGroup]="a.classGroup"
+        mode="reassign"
+        [currentDriverId]="a.driverId"
+        [submitting]="sheetSubmitting()"
+        (submit)="submitReassign($event)"
+        (dismiss)="closeSheet()">
+      </app-assign-driver-sheet>
+    }
+  }
+
+  <!-- Unassign sheet -->
+  @if (unassignFor(); as a) {
+    <app-unassign-sheet
+      [assignment]="a"
+      [submitting]="sheetSubmitting()"
+      (submit)="submitUnassign($event)"
+      (dismiss)="closeSheet()">
+    </app-unassign-sheet>
+  }
+
+</div>

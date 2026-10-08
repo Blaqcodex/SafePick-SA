@@ -1,0 +1,215 @@
+<!-- ============================================================
+     MonitoringComponent — 5.8d
+     Live-updating monitoring board.
+     ============================================================ -->
+
+<div class="monitoring">
+
+  <!-- Header -->
+  <header class="monitoring__header">
+    <div class="monitoring__header-row">
+      <div>
+        <h1 class="monitoring__title">Monitoring</h1>
+        <p class="monitoring__date">{{ displayDate }}</p>
+      </div>
+
+      <div class="monitoring__actions">
+        @if (state() === 'ready') {
+          <button
+            type="button"
+            class="monitoring__run"
+            [disabled]="runningReconciliation()"
+            (click)="runReconciliation()">
+            @if (runningReconciliation()) {
+              <mat-spinner diameter="18"></mat-spinner>
+              <span>Checking…</span>
+            } @else {
+              <mat-icon aria-hidden="true">fact_check</mat-icon>
+              <span>Run reconciliation</span>
+            }
+          </button>
+
+          <button
+            type="button"
+            class="monitoring__refresh"
+            (click)="load()"
+            aria-label="Refresh now">
+            <mat-icon aria-hidden="true">refresh</mat-icon>
+          </button>
+        }
+      </div>
+    </div>
+
+    <!-- Reconciliation result banner -->
+    @if (reconciliationResult(); as r) {
+      <div class="reconciliation-result" role="status">
+        <mat-icon aria-hidden="true">check_circle</mat-icon>
+        <span class="reconciliation-result__text">
+          Reconciliation complete.
+          <strong>{{ r.expectationsEvaluated }}</strong>
+          {{ r.expectationsEvaluated === 1 ? 'expectation' : 'expectations' }} evaluated.
+          @if (r.gappedCount > 0) {
+            <strong class="reconciliation-result__gaps">
+              {{ r.gappedCount }} {{ r.gappedCount === 1 ? 'gap' : 'gaps' }} opened.
+            </strong>
+          } @else {
+            No gaps opened.
+          }
+        </span>
+        <button
+          type="button"
+          class="reconciliation-result__dismiss"
+          (click)="dismissReconciliationResult()"
+          aria-label="Dismiss">
+          <mat-icon aria-hidden="true">close</mat-icon>
+        </button>
+      </div>
+    }
+
+    <!-- Reconciliation error banner -->
+    @if (reconciliationError(); as err) {
+      <div class="reconciliation-error" role="alert">
+        <mat-icon aria-hidden="true">error_outline</mat-icon>
+        <span class="reconciliation-error__text">{{ err }}</span>
+        <button
+          type="button"
+          class="reconciliation-error__dismiss"
+          (click)="dismissReconciliationError()"
+          aria-label="Dismiss">
+          <mat-icon aria-hidden="true">close</mat-icon>
+        </button>
+      </div>
+    }
+
+    @if (state() === 'ready' && updatedLabel()) {
+      <p class="monitoring__updated" aria-live="polite">
+        {{ updatedLabel() }}
+      </p>
+    }
+  </header>
+
+  <!-- Loading -->
+  @if (state() === 'loading') {
+    <div class="monitoring__state monitoring__state--loading">
+      <mat-spinner diameter="36"></mat-spinner>
+      <p>Loading monitoring data…</p>
+    </div>
+  }
+
+  <!-- Error (no prior data) -->
+  @if (state() === 'error') {
+    <div class="monitoring__state monitoring__state--error" role="alert">
+      <mat-icon aria-hidden="true">error_outline</mat-icon>
+      <p>{{ errorMessage() }}</p>
+      <button mat-flat-button color="primary" (click)="load()">
+        Try again
+      </button>
+    </div>
+  }
+
+  <!-- Ready -->
+  @if (state() === 'ready' && summary(); as s) {
+
+    <div class="summary">
+      <div class="summary__card summary__card--neutral">
+        <div class="summary__value">{{ totalExpected() }}</div>
+        <div class="summary__label">Expected</div>
+      </div>
+      <div class="summary__card summary__card--success">
+        <div class="summary__value">{{ pickedUp() }}</div>
+        <div class="summary__label">Picked up</div>
+      </div>
+      <div class="summary__card summary__card--warning">
+        <div class="summary__value">{{ notInCar() }}</div>
+        <div class="summary__label">Not in car</div>
+      </div>
+      <div
+        class="summary__card"
+        [class.summary__card--danger]="openGaps() > 0"
+        [class.summary__card--muted]="openGaps() === 0">
+        <div class="summary__value">{{ openGaps() }}</div>
+        <div class="summary__label">Gaps</div>
+      </div>
+    </div>
+
+    <nav class="monitoring__tabs" role="tablist" aria-label="Filter by status">
+      @for (tab of tabs; track tab.value) {
+        <button
+          type="button"
+          role="tab"
+          class="monitoring__tab"
+          [class.monitoring__tab--active]="activeTab() === tab.value"
+          [attr.aria-selected]="activeTab() === tab.value"
+          (click)="setTab(tab.value)">
+          {{ tab.label }}
+        </button>
+      }
+    </nav>
+
+    @if (!hasRows()) {
+      <div class="monitoring__state monitoring__state--empty">
+        <mat-icon aria-hidden="true">groups</mat-icon>
+        <p>No learners are expected on transport today.</p>
+      </div>
+    }
+
+    @if (hasRows() && !hasVisibleRows()) {
+      <div class="monitoring__state monitoring__state--empty">
+        <mat-icon aria-hidden="true">check_circle_outline</mat-icon>
+        @if (activeTab() === 'Pending') {
+          <p>No pending learners. Everyone has been accounted for.</p>
+        } @else {
+          <p>No learners in this view.</p>
+        }
+      </div>
+    }
+
+    @if (hasVisibleRows()) {
+      <ul class="monitoring__list">
+        @for (row of visibleRows(); track row.learnerId) {
+          <li
+            class="monitor-card"
+            [class.monitor-card--pending]="row.status === 'Pending'"
+            [class.monitor-card--picked-up]="isResolved(row.status)"
+            [class.monitor-card--not-in-car]="row.status === 'NotInCar'"
+            [class.monitor-card--absent]="row.status === 'SchoolMarkedAbsent'"
+            [class.monitor-card--gapped]="row.status === 'Gapped'">
+
+            <div class="monitor-card__top">
+              <div class="monitor-card__identity">
+                <div class="monitor-card__name">{{ row.learnerFullName }}</div>
+                <div class="monitor-card__meta">
+                  <span class="monitor-card__class">{{ row.classGroup }}</span>
+                  <span class="monitor-card__dot">·</span>
+                  <span>{{ row.driverName }}</span>
+                  <span class="monitor-card__dot">·</span>
+                  <span class="monitor-card__reg">{{ row.vehicleRegistration }}</span>
+                </div>
+              </div>
+
+              <span
+                class="status-pill"
+                [class.status-pill--success]="isResolved(row.status)"
+                [class.status-pill--warning]="row.status === 'NotInCar'"
+                [class.status-pill--neutral]="row.status === 'SchoolMarkedAbsent' || row.status === 'Corrected'"
+                [class.status-pill--danger]="row.status === 'Gapped'"
+                [class.status-pill--pending]="row.status === 'Pending'">
+                {{ statusLabel(row.status) }}
+              </span>
+            </div>
+
+            @if (isResolved(row.status) && row.resolvedAt) {
+              <div class="monitor-card__detail monitor-card__detail--success">
+                <mat-icon aria-hidden="true">check_circle</mat-icon>
+                <span>Confirmed at {{ formatTime(row.resolvedAt) }}</span>
+              </div>
+            }
+
+          </li>
+        }
+      </ul>
+    }
+
+  }
+
+</div>

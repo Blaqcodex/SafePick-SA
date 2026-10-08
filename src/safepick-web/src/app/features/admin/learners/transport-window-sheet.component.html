@@ -1,0 +1,105 @@
+<!-- ============================================================
+     TransportWindowSheetComponent
+     ============================================================ -->
+
+<div
+  class="sheet-backdrop"
+  (click)="onBackdropClick($event)"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="sheet-title">
+
+  <div class="sheet" (click)="$event.stopPropagation()">
+
+    <div class="sheet__handle" aria-hidden="true"></div>
+
+    <div class="sheet__header">
+      <h2 id="sheet-title" class="sheet__title">
+        {{ existing ? 'Edit transport window' : 'Set transport window' }}
+      </h2>
+      <p class="sheet__subtitle">
+        Pickups are expected during this window. Reconciliation runs
+        after the close time plus the grace period.
+      </p>
+    </div>
+
+    <form
+      class="sheet__form"
+      [formGroup]="form"
+      (ngSubmit)="onSubmit()"
+      novalidate>
+
+      <div class="sheet__row">
+        <label class="sheet__field">
+          <span class="sheet__label">Opens at</span>
+          <input
+            type="time"
+            class="sheet__input"
+            formControlName="opensAt"
+            [attr.aria-invalid]="opensAt.invalid && opensAt.touched" />
+          @if (opensAt.touched && opensAt.invalid) {
+            <span class="sheet__error">Open time is required.</span>
+          }
+        </label>
+
+        <label class="sheet__field">
+          <span class="sheet__label">Closes at</span>
+          <input
+            type="time"
+            class="sheet__input"
+            formControlName="closesAt"
+            [attr.aria-invalid]="closesAt.invalid && closesAt.touched" />
+          @if (closesAt.touched && closesAt.invalid) {
+            <span class="sheet__error">Close time is required.</span>
+          }
+        </label>
+      </div>
+
+      <label class="sheet__field">
+        <span class="sheet__label">Grace period (minutes)</span>
+        <input
+          type="number"
+          class="sheet__input"
+          formControlName="graceMinutes"
+          min="0"
+          max="240"
+          inputmode="numeric"
+          [attr.aria-invalid]="graceMinutes.invalid && graceMinutes.touched" />
+        @if (graceMinutes.touched && graceMinutes.invalid) {
+          <span class="sheet__error">Grace must be 0–240 minutes.</span>
+        } @else {
+          <span class="sheet__hint">
+            Time after close during which late pickups are still accepted.
+          </span>
+        }
+      </label>
+
+      <p class="sheet__note">
+        This window applies to <strong>all learners</strong> at your school.
+      </p>
+
+      <div class="sheet__actions">
+        <button
+          type="submit"
+          class="sheet__button sheet__button--primary"
+          [disabled]="submitting || form.invalid">
+          @if (submitting) {
+            <mat-spinner diameter="20"></mat-spinner>
+            <span>Saving…</span>
+          } @else {
+            <span>{{ existing ? 'Save changes' : 'Set window' }}</span>
+          }
+        </button>
+        <button
+          type="button"
+          class="sheet__button sheet__button--secondary"
+          [disabled]="submitting"
+          (click)="onDismiss()">
+          Cancel
+        </button>
+      </div>
+
+    </form>
+
+  </div>
+</div>

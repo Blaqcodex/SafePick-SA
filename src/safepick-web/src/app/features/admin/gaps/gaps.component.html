@@ -1,0 +1,223 @@
+<!-- ============================================================
+     GapsComponent — 5.9d
+     All lifecycle actions are live: acknowledge, investigate, resolve.
+     ============================================================ -->
+
+<div class="gaps">
+
+  <header class="gaps__header">
+    <h1 class="gaps__title">Custody Gaps</h1>
+    @if (state() === 'ready') {
+      <p class="gaps__subtitle" [class.gaps__subtitle--clear]="openCount() === 0">
+        {{ headerSummary() }}
+      </p>
+    }
+  </header>
+
+  @if (actionError(); as msg) {
+    <div class="action-error" role="alert">
+      <mat-icon aria-hidden="true">error_outline</mat-icon>
+      <span class="action-error__text">{{ msg }}</span>
+      <button
+        type="button"
+        class="action-error__dismiss"
+        (click)="actionError.set(null)"
+        aria-label="Dismiss">
+        <mat-icon aria-hidden="true">close</mat-icon>
+      </button>
+    </div>
+  }
+
+  @if (state() === 'loading') {
+    <div class="gaps__state gaps__state--loading">
+      <mat-spinner diameter="36"></mat-spinner>
+      <p>Loading custody gaps…</p>
+    </div>
+  }
+
+  @if (state() === 'error') {
+    <div class="gaps__state gaps__state--error" role="alert">
+      <mat-icon aria-hidden="true">error_outline</mat-icon>
+      <p>{{ errorMessage() }}</p>
+      <button mat-flat-button color="primary" (click)="load()">
+        Try again
+      </button>
+    </div>
+  }
+
+  @if (state() === 'ready') {
+
+    <nav class="gaps__tabs" role="tablist" aria-label="Filter by state">
+      @for (tab of tabs; track tab.value) {
+        <button
+          type="button"
+          role="tab"
+          class="gaps__tab"
+          [class.gaps__tab--active]="activeTab() === tab.value"
+          [attr.aria-selected]="activeTab() === tab.value"
+          (click)="setTab(tab.value)">
+          <span>{{ tab.label }}</span>
+          @if (tab.value === 'Open' && openCount() > 0) {
+            <span class="gaps__tab-badge">{{ openCount() }}</span>
+          }
+        </button>
+      }
+    </nav>
+
+    @if (!hasVisibleGaps()) {
+      <div class="gaps__state gaps__state--empty">
+        <mat-icon aria-hidden="true">check_circle_outline</mat-icon>
+        @if (activeTab() === 'Open') {
+          <p>No open gaps. Every expected pickup has been accounted for.</p>
+        } @else {
+          <p>No gaps in this view.</p>
+        }
+      </div>
+    }
+
+    @if (hasVisibleGaps()) {
+      <ul class="gaps__list">
+        @for (gap of visibleGaps(); track gap.gapId) {
+          <li
+            class="gap-card"
+            [class.gap-card--open]="gap.state === 'Open'"
+            [class.gap-card--acknowledged]="gap.state === 'Acknowledged'"
+            [class.gap-card--investigating]="gap.state === 'Investigating'"
+            [class.gap-card--resolved]="gap.state === 'Resolved' || gap.state === 'Closed'">
+
+            <div class="gap-card__top">
+              <div class="gap-card__identity">
+                <div class="gap-card__name">{{ gap.learnerFullName }}</div>
+                <div class="gap-card__meta">
+                  <span class="gap-card__class">{{ gap.classGroup }}</span>
+                  @if (gap.driverName) {
+                    <span class="gap-card__dot">·</span>
+                    <span>{{ gap.driverName }}</span>
+                  }
+                </div>
+              </div>
+
+              <span
+                class="status-pill"
+                [class.status-pill--danger]="gap.state === 'Open'"
+                [class.status-pill--warning]="gap.state === 'Acknowledged'"
+                [class.status-pill--info]="gap.state === 'Investigating'"
+                [class.status-pill--success]="gap.state === 'Resolved'"
+                [class.status-pill--neutral]="gap.state === 'Closed'">
+                {{ stateLabel(gap.state) }}
+              </span>
+            </div>
+
+            <div class="gap-card__window">
+              <mat-icon aria-hidden="true">schedule</mat-icon>
+              <div>
+                <div class="gap-card__window-label">Expected window</div>
+                <div class="gap-card__window-value">
+                  {{ formatWindow(gap.expectedWindowStart, gap.expectedWindowEnd) }}
+                </div>
+              </div>
+            </div>
+
+            <div class="gap-card__opened">
+              Opened {{ formatDateTime(gap.openedAt) }}
+            </div>
+
+            @if (gap.resolution) {
+              <div class="gap-card__resolution">
+                <mat-icon aria-hidden="true">task_alt</mat-icon>
+                <div>
+                  <div class="gap-card__resolution-label">Resolution</div>
+                  <div class="gap-card__resolution-text">{{ gap.resolution }}</div>
+                </div>
+              </div>
+            }
+
+            @if (gap.state === 'Open') {
+              <div class="gap-card__warning">
+                <mat-icon aria-hidden="true">warning_amber</mat-icon>
+                <span>No custody event was recorded during this window.</span>
+              </div>
+            }
+
+            <!-- Actions -->
+            @if (gap.state === 'Open') {
+              <div class="gap-card__actions">
+                <button
+                  type="button"
+                  class="gap-card__action gap-card__action--primary"
+                  (click)="openAcknowledge(gap)">
+                  <mat-icon aria-hidden="true">visibility</mat-icon>
+                  <span>Acknowledge</span>
+                </button>
+              </div>
+            }
+
+            @if (gap.state === 'Acknowledged') {
+              <div class="gap-card__actions">
+                <button
+                  type="button"
+                  class="gap-card__action gap-card__action--info"
+                  (click)="openInvestigate(gap)">
+                  <mat-icon aria-hidden="true">search</mat-icon>
+                  <span>Investigate</span>
+                </button>
+                <button
+                  type="button"
+                  class="gap-card__action gap-card__action--primary"
+                  (click)="openResolve(gap)">
+                  <mat-icon aria-hidden="true">task_alt</mat-icon>
+                  <span>Resolve</span>
+                </button>
+              </div>
+            }
+
+            @if (gap.state === 'Investigating') {
+              <div class="gap-card__actions">
+                <button
+                  type="button"
+                  class="gap-card__action gap-card__action--primary"
+                  (click)="openResolve(gap)">
+                  <mat-icon aria-hidden="true">task_alt</mat-icon>
+                  <span>Resolve</span>
+                </button>
+              </div>
+            }
+
+          </li>
+        }
+      </ul>
+    }
+
+  }
+
+  <!-- Acknowledge sheet -->
+  @if (activeSheet() === 'acknowledge' && sheetGap(); as gap) {
+    <app-acknowledge-sheet
+      [gap]="gap"
+      [submitting]="sheetSubmitting()"
+      (submit)="submitAcknowledge()"
+      (dismiss)="closeSheet()">
+    </app-acknowledge-sheet>
+  }
+
+  <!-- Investigate sheet -->
+  @if (activeSheet() === 'investigate' && sheetGap(); as gap) {
+    <app-investigate-sheet
+      [gap]="gap"
+      [submitting]="sheetSubmitting()"
+      (submit)="submitInvestigate($event)"
+      (dismiss)="closeSheet()">
+    </app-investigate-sheet>
+  }
+
+  <!-- Resolve sheet -->
+  @if (activeSheet() === 'resolve' && sheetGap(); as gap) {
+    <app-resolve-sheet
+      [gap]="gap"
+      [submitting]="sheetSubmitting()"
+      (submit)="submitResolve($event)"
+      (dismiss)="closeSheet()">
+    </app-resolve-sheet>
+  }
+
+</div>

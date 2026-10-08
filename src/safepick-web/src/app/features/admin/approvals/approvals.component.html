@@ -1,0 +1,181 @@
+<!-- ============================================================
+     ApprovalsComponent — 5.6d
+     The school admin's driver approvals board.
+     All actions are live.
+     ============================================================ -->
+
+<div class="approvals">
+
+  <header class="approvals__header">
+    <h1 class="approvals__title">Driver Approvals</h1>
+    <p class="approvals__subtitle">
+      Review driver registrations for your school.
+    </p>
+  </header>
+
+  <nav class="approvals__tabs" role="tablist" aria-label="Filter by status">
+    @for (tab of tabs; track tab.value) {
+      <button
+        type="button"
+        role="tab"
+        class="approvals__tab"
+        [class.approvals__tab--active]="activeTab() === tab.value"
+        [attr.aria-selected]="activeTab() === tab.value"
+        (click)="setTab(tab.value)">
+        <span>{{ tab.label }}</span>
+        @if (tab.value === 'Pending' && pendingCount() > 0) {
+          <span class="approvals__tab-badge">{{ pendingCount() }}</span>
+        }
+      </button>
+    }
+  </nav>
+
+  @if (actionError(); as msg) {
+    <div class="action-error" role="alert">
+      <mat-icon aria-hidden="true">error_outline</mat-icon>
+      <span class="action-error__text">{{ msg }}</span>
+      <button
+        type="button"
+        class="action-error__dismiss"
+        (click)="actionError.set(null)"
+        aria-label="Dismiss">
+        <mat-icon aria-hidden="true">close</mat-icon>
+      </button>
+    </div>
+  }
+
+  @if (state() === 'loading') {
+    <div class="approvals__state approvals__state--loading">
+      <mat-spinner diameter="36"></mat-spinner>
+      <p>Loading driver approvals…</p>
+    </div>
+  }
+
+  @if (state() === 'error') {
+    <div class="approvals__state approvals__state--error" role="alert">
+      <mat-icon aria-hidden="true">error_outline</mat-icon>
+      <p>{{ errorMessage() }}</p>
+      <button mat-flat-button color="primary" (click)="load()">
+        Try again
+      </button>
+    </div>
+  }
+
+  @if (state() === 'ready' && !hasVisibleApprovals()) {
+    <div class="approvals__state approvals__state--empty">
+      <mat-icon aria-hidden="true">check_circle_outline</mat-icon>
+      @if (activeTab() === 'Pending') {
+        <p>No pending approvals. You’re all caught up.</p>
+      } @else {
+        <p>No {{ activeTab().toLowerCase() }} approvals.</p>
+      }
+    </div>
+  }
+
+  @if (state() === 'ready' && hasVisibleApprovals()) {
+    <ul class="approvals__list">
+      @for (approval of visibleApprovals(); track approval.approvalId) {
+        <li
+          class="approval-card"
+          [class.approval-card--pending]="approval.status === 'Pending'"
+          [class.approval-card--resolved]="approval.status !== 'Pending'">
+
+          <div class="approval-card__top">
+            <div class="approval-card__identity">
+              <div class="approval-card__name">{{ approval.driverFullName }}</div>
+              <div class="approval-card__contact">{{ approval.driverEmail }}</div>
+              <div class="approval-card__contact">{{ approval.driverPhone }}</div>
+            </div>
+
+            <span
+              class="status-pill"
+              [class.status-pill--success]="approval.status === 'Approved'"
+              [class.status-pill--warning]="approval.status === 'Pending'"
+              [class.status-pill--neutral]="approval.status === 'Rejected'"
+              [class.status-pill--danger]="approval.status === 'Revoked'">
+              {{ statusLabel(approval.status) }}
+            </span>
+          </div>
+
+          <div class="approval-card__vehicle">
+            <mat-icon aria-hidden="true">directions_bus</mat-icon>
+            <span class="approval-card__registration">
+              {{ approval.vehicle.registration }}
+            </span>
+            <span class="approval-card__dot">·</span>
+            <span>{{ approval.vehicle.make }} {{ approval.vehicle.model }}</span>
+            <span class="approval-card__dot">·</span>
+            <span>{{ approval.vehicle.capacity }} seats</span>
+          </div>
+
+          <div class="approval-card__meta">
+            @if (approval.status === 'Pending') {
+              <span>Requested {{ formatDateTime(approval.requestedAt) }}</span>
+            } @else if (approval.decidedAt) {
+              <span>Decided {{ formatDateTime(approval.decidedAt) }}</span>
+            }
+          </div>
+
+          @if (approval.reason) {
+            <div class="approval-card__reason">
+              <mat-icon aria-hidden="true">info_outline</mat-icon>
+              <span>{{ approval.reason }}</span>
+            </div>
+          }
+
+          @if (approval.status === 'Pending') {
+            <div class="approval-card__actions">
+              <button
+                type="button"
+                class="approval-card__action approval-card__action--primary"
+                [disabled]="isSubmitting(approval.approvalId)"
+                (click)="approve(approval)">
+                @if (isSubmitting(approval.approvalId)) {
+                  <mat-spinner diameter="20"></mat-spinner>
+                  <span>Approving…</span>
+                } @else {
+                  <mat-icon aria-hidden="true">check</mat-icon>
+                  <span>Approve</span>
+                }
+              </button>
+              <button
+                type="button"
+                class="approval-card__action approval-card__action--warning"
+                (click)="openReject(approval)">
+                <mat-icon aria-hidden="true">close</mat-icon>
+                <span>Reject</span>
+              </button>
+            </div>
+          }
+
+          @if (approval.status === 'Approved') {
+            <div class="approval-card__actions">
+              <button
+                type="button"
+                class="approval-card__action approval-card__action--danger"
+                (click)="openRevoke(approval)">
+                <mat-icon aria-hidden="true">block</mat-icon>
+                <span>Revoke</span>
+              </button>
+            </div>
+          }
+
+        </li>
+      }
+    </ul>
+  }
+
+  <!-- Decision sheet (reject / revoke) -->
+  @if (sheetApproval(); as sheetRow) {
+    @if (sheetMode(); as mode) {
+      <app-decision-sheet
+        [approval]="sheetRow"
+        [mode]="mode"
+        [submitting]="sheetSubmitting()"
+        (submitReason)="submitDecision($event)"
+        (dismiss)="closeSheet()">
+      </app-decision-sheet>
+    }
+  }
+
+</div>

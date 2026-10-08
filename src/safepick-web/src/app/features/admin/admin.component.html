@@ -1,0 +1,142 @@
+<!-- ============================================================
+     AdminComponent — the landing dashboard
+     ============================================================ -->
+
+<div class="dashboard">
+
+  <!-- Greeting -->
+  <header class="dashboard__header">
+    <h1 class="dashboard__greeting">{{ greeting() }}</h1>
+    <p class="dashboard__date">{{ displayDate }}</p>
+  </header>
+
+  <!-- Loading -->
+  @if (state() === 'loading') {
+    <div class="dashboard__state">
+      <mat-spinner diameter="36"></mat-spinner>
+      <p>Loading today’s dashboard…</p>
+    </div>
+  }
+
+  <!-- Error -->
+  @if (state() === 'error') {
+    <div class="dashboard__state dashboard__state--error" role="alert">
+      <mat-icon aria-hidden="true">error_outline</mat-icon>
+      <p>{{ errorMessage() }}</p>
+      <button mat-flat-button color="primary" (click)="load()">
+        Try again
+      </button>
+    </div>
+  }
+
+  <!-- Ready -->
+  @if (state() === 'ready' && summary(); as s) {
+
+    <!-- Status strip -->
+    <section class="status-strip">
+      <a class="status-card status-card--neutral"
+         routerLink="/admin/monitoring">
+        <div class="status-card__value">{{ totalExpected() }}</div>
+        <div class="status-card__label">Expected</div>
+      </a>
+
+      <a class="status-card status-card--success"
+         routerLink="/admin/monitoring">
+        <div class="status-card__value">{{ pickedUp() }}</div>
+        <div class="status-card__label">Picked up</div>
+      </a>
+
+      <a class="status-card status-card--warning"
+         routerLink="/admin/monitoring">
+        <div class="status-card__value">{{ notInCar() }}</div>
+        <div class="status-card__label">Not in car</div>
+      </a>
+
+      <a
+        class="status-card"
+        [class.status-card--danger]="openGaps() > 0"
+        [class.status-card--muted]="openGaps() === 0"
+        routerLink="/admin/gaps">
+        <div class="status-card__value">{{ openGaps() }}</div>
+        <div class="status-card__label">Open gaps</div>
+      </a>
+    </section>
+
+    <!-- Quick actions -->
+    <section class="quick-actions">
+      <h2 class="quick-actions__title">Quick actions</h2>
+      <div class="quick-actions__row">
+        <a class="action-card" routerLink="/admin/approvals">
+          <mat-icon aria-hidden="true">how_to_reg</mat-icon>
+          <span class="action-card__label">Approve drivers</span>
+          <span class="action-card__hint">Review pending driver registrations</span>
+        </a>
+
+        <a class="action-card" routerLink="/admin/learners">
+          <mat-icon aria-hidden="true">groups</mat-icon>
+          <span class="action-card__label">Manage learners</span>
+          <span class="action-card__hint">Add learners and assign them to drivers</span>
+        </a>
+
+        <a class="action-card" routerLink="/admin/monitoring">
+          <mat-icon aria-hidden="true">monitor_heart</mat-icon>
+          <span class="action-card__label">Open monitoring</span>
+          <span class="action-card__hint">Watch today’s custody status live</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- Recent activity -->
+    <section class="recent">
+      <div class="recent__header">
+        <h2 class="recent__title">Recent activity</h2>
+        <a class="recent__link" routerLink="/admin/monitoring">
+          View all
+          <mat-icon aria-hidden="true">arrow_forward</mat-icon>
+        </a>
+      </div>
+
+      @if (!hasRecentActivity()) {
+        <div class="recent__empty">
+          <mat-icon aria-hidden="true">schedule</mat-icon>
+          <p>No pickups recorded yet today.</p>
+          <p class="recent__empty-hint">
+            Activity will appear here as drivers confirm pickups.
+          </p>
+        </div>
+      }
+
+      @if (hasRecentActivity()) {
+        <ul class="recent-list">
+          @for (row of recentActivity(); track row.learnerId) {
+            <li class="recent-item">
+              <div class="recent-item__identity">
+                <div class="recent-item__name">{{ row.learnerFullName }}</div>
+                <div class="recent-item__meta">
+                  <span class="recent-item__class">{{ row.classGroup }}</span>
+                  <span class="recent-item__dot">·</span>
+                  <span>{{ row.driverName }}</span>
+                </div>
+              </div>
+
+              <div class="recent-item__right">
+                <span
+                  class="status-pill"
+                  [class.status-pill--success]="isResolved(row.status)"
+                  [class.status-pill--warning]="row.status === 'NotInCar'"
+                  [class.status-pill--neutral]="row.status === 'SchoolMarkedAbsent'">
+                  {{ statusLabel(row.status) }}
+                </span>
+                @if (row.resolvedAt) {
+                  <span class="recent-item__time">{{ formatTime(row.resolvedAt) }}</span>
+                }
+              </div>
+            </li>
+          }
+        </ul>
+      }
+    </section>
+
+  }
+
+</div>
