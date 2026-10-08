@@ -1,89 +1,125 @@
 # SafePick SA
 
-**Digital Learner Transport Verification & Pickup Management System**
+**Learner transport verification and pickup management**
 
-> A **Guarantees Custody, Single-Node Expert System** for verifiable learner
-> transport in South Africa.
+SafePick SA is an academic project exploring how software can make learner
+transport handovers more accountable. It models expected pickups, records
+custody events, and gives unresolved handovers an explicit lifecycle instead
+of treating missing information as a successful pickup.
 
----
+> **Project status:** local-development project; not a deployed transport
+> service and not ready to manage real learner data. Deployment, operational
+> security, privacy review, and production readiness have not been established.
 
-## What This Is
+## How it works
 
-SafePick SA establishes a **verifiable chain of custody** for every learner
-using private transport, every school day. It is not a digitized register.
-It is an accountability system: it knows what *should* happen, detects what
-*didn't*, and never lets an unconfirmed pickup silently disappear.
+1. Schools configure transport windows and assign learners to approved drivers.
+2. Drivers record pickup confirmations or report when a learner is not in the
+   vehicle.
+3. School staff can review custody status and event history.
+4. Reconciliation identifies expected pickups without a resolving event.
+5. A school can acknowledge, investigate, and resolve each resulting custody
+   gap.
 
-## Architectural Position
+The domain distinguishes three concepts:
 
-- **Guarantees Custody** — the system models expectations, events, and gaps.
-  Every missing pickup becomes an owned, resolvable custody gap.
-- **Single-Node Expert System** — full domain rigor, deliberately scoped
-  deployment. No brokers, no cloud, no distribution. Every guarantee is
-  enforced by the domain model, not compensated for by infrastructure.
+- **Expectation:** a pickup derived from the learner's active assignment and
+  the school's transport window.
+- **Custody event:** an attributable record of a handover or related custody
+  event.
+- **Custody gap:** an unresolved expectation that is tracked through a
+  defined lifecycle.
 
-## The Custody Model (in one sentence)
+## Project structure
 
-> Custody is the responsibility of an accountable party — the School or the
-> Driver — for a learner, during a transport window, with a verifiable
-> handover event.
-
-Expectations are **derived** (not stored). Events are **immutable**
-(corrections are compensating events). Gaps are **first-class** (with a
-five-state lifecycle).
-
-## Stack
-
-| Layer          | Technology                          |
-| -------------- | ----------------------------------- |
-| Backend        | .NET 10, C# 14                      |
-| Architecture   | Clean Architecture, CQRS-lite       |
-| Persistence    | PostgreSQL 16, EF Core 8            |
-| Frontend       | Angular 17 (Standalone, responsive) |
-| Notifications  | SMTP via MailKit (channel-abstract) |
-| PDF            | QuestPDF                            |
-| Local Infra    | Docker Compose                      |
-
-## Repository Layout
-
-- `src/SafePick.Domain` — domain model and business invariants
-- `src/SafePick.Application` — use cases and application workflows
-- `src/SafePick.Infrastructure` — persistence and external integrations
-- `src/SafePick.Api` — ASP.NET Core API host
-- `src/safepick-web` — Angular web application
-- `docker` — local PostgreSQL setup
-- `docs` — architecture, domain, and decision records
-
-## Configuration
-
-The API does not include usable JWT signing or operator bootstrap credentials.
-Set these values through environment variables or a deployment secret store
-before starting the API:
-
-| Environment variable | Requirement |
+| Path | Responsibility |
 | --- | --- |
-| `Jwt__SigningKey` | At least 32 UTF-8 bytes |
-| `Seed__OperatorPassword` | At least 12 characters |
-| `ConnectionStrings__DefaultConnection` | PostgreSQL connection string |
+| `src/SafePick.Domain` | Domain entities, value objects, and invariants |
+| `src/SafePick.Application` | Commands, queries, validation, and workflows |
+| `src/SafePick.Infrastructure` | PostgreSQL persistence and external services |
+| `src/SafePick.Api` | ASP.NET Core API and application composition |
+| `src/safepick-web` | Angular web client |
+| `tests/SafePick.Domain.Tests` | Domain unit tests |
+| `docker` | Local PostgreSQL and pgAdmin setup |
+| `docs` | Architecture, domain, privacy, and threat-model notes |
 
-For local development, use .NET User Secrets or environment variables rather
-than committing credentials. `appsettings.Development.json` is excluded by
-`.gitignore`; do not force-add it to Git.
+The backend follows a layered architecture. The API handles HTTP concerns,
+the application layer coordinates use cases, the domain layer enforces
+business rules, and infrastructure provides persistence and integrations.
+The frontend is an Angular standalone application.
 
-## Build and Test
+## Technology
 
-Run the backend build and domain tests from the repository root:
+- .NET 10 and C# 14
+- PostgreSQL 16 and Entity Framework Core
+- Angular 17 and TypeScript
+- Docker Compose for local database tooling
+
+## Requirements
+
+- .NET 10 SDK
+- Node.js 20 and npm
+- Docker Desktop (for the local PostgreSQL setup)
+
+## Local development
+
+Start PostgreSQL from the repository root:
+
+```powershell
+docker compose -f docker/docker-compose.yml up -d postgres
+```
+
+Configure local API credentials with .NET User Secrets. Run these commands
+from the repository root and provide your own random JWT key and operator
+password; do not put real credentials in committed files:
+
+```powershell
+dotnet user-secrets init --project src/SafePick.Api/SafePick.Api.csproj
+dotnet user-secrets set "Jwt:SigningKey" "<random value of at least 32 UTF-8 bytes>" --project src/SafePick.Api/SafePick.Api.csproj
+dotnet user-secrets set "Seed:OperatorPassword" "<password of at least 12 characters>" --project src/SafePick.Api/SafePick.Api.csproj
+dotnet user-secrets set "ConnectionStrings:DefaultConnection" "<local PostgreSQL connection string>" --project src/SafePick.Api/SafePick.Api.csproj
+```
+
+The API requires `Jwt:SigningKey` and `Seed:OperatorPassword`; it exits at
+startup if either is missing or invalid. Database migrations are not applied
+by the API at startup. The PostgreSQL credentials in Compose and the
+initialization SQL are for isolated local development only. Do not expose
+these services or reuse these values in another environment.
+
+## Build and test
+
+From the repository root, build the backend and run the domain tests:
 
 ```powershell
 dotnet test SafePick.slnx --configuration Release
 ```
 
-Build the Angular frontend for production:
+Build the web application for production:
 
 ```powershell
-cd src/safepick-web
+Set-Location src/safepick-web
 npm ci
 npm run build
 ```
 
-GitHub Actions runs both checks on pushes and pull requests targeting `main`.
+GitHub Actions is configured to run both checks for pushes and pull requests
+targeting `main`. The checks still require GitHub Actions to be enabled and
+available for the repository account.
+
+## Security and privacy
+
+This project concerns children's transport and contact data. Do not use real
+personal information in local development, screenshots, issues, or test
+fixtures. See [the threat model](docs/threat-model.md) and
+[the privacy notes](docs/popia-strategy.md) for scope and limitations.
+
+Local development settings such as `appsettings.Development.json` and `.env`
+files are ignored by Git. Never force-add secret-bearing local files.
+
+## Further documentation
+
+- [Architecture](docs/architecture.md)
+- [Domain model](docs/domain-model.md)
+- [Use cases](docs/use-cases.md)
+- [Glossary](docs/glossary.md)
+- [Architecture decision records](docs/adr/)

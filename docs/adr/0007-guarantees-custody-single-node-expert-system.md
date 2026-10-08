@@ -66,10 +66,12 @@ The system's guarantees are enforced by the domain model, not by
 infrastructure. There is no message broker, no distributed coordinator,
 no cloud service compensating for weak design. Specifically:
 
-- **Delivery guarantees** are provided by a *transactional outbox* — a
-  database table written in the same transaction as the domain event,
-  polled by a background hosted service. This gives at-least-once
-  delivery without a broker.
+- **Notification delivery** uses an outbox table and a background hosted
+  service, avoiding a message-broker dependency. The current event-dispatch
+  behavior writes outbox messages in a follow-up save after the command
+  handler saves its changes, so atomicity between those writes is not
+  guaranteed yet. Reliable, transactional delivery remains implementation
+  work.
 
 - **Reconciliation** is a designed subsystem, invoked at transport-window
   close and upon late sync arrival. It is not a cron job.
