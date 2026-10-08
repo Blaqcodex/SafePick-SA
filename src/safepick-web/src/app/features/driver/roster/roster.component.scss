@@ -1,0 +1,342 @@
+// ============================================================
+// RosterComponent — 5.5d
+// The driver's roster with working confirm-pickup action.
+// ============================================================
+
+:host {
+  display: block;
+}
+
+.roster {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+// ---------- Header ----------
+
+.roster__header {
+  margin-bottom: var(--safepick-space-5);
+}
+
+.roster__date {
+  margin: 0 0 var(--safepick-space-1);
+  font-size: var(--safepick-text-2xl);
+  font-weight: 700;
+  color: var(--safepick-primary);
+  letter-spacing: -0.02em;
+}
+
+.roster__meta {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--safepick-space-2);
+  font-size: var(--safepick-text-sm);
+  color: var(--safepick-text-muted);
+}
+
+.roster__vehicle {
+  font-family: var(--safepick-font-mono);
+  font-weight: 500;
+  color: var(--safepick-metal-3);
+}
+
+.roster__dot {
+  opacity: 0.5;
+}
+
+// ---------- Action error banner ----------
+
+.action-error {
+  display: flex;
+  align-items: center;
+  gap: var(--safepick-space-3);
+  padding: var(--safepick-space-3) var(--safepick-space-4);
+  margin-bottom: var(--safepick-space-4);
+  background: var(--safepick-danger-light);
+  color: var(--safepick-danger);
+  border: 1px solid rgba(220, 38, 38, 0.3);
+  border-radius: var(--safepick-radius-md);
+  font-size: var(--safepick-text-sm);
+  font-weight: 500;
+
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+  }
+}
+
+.action-error__text {
+  flex: 1;
+  min-width: 0;
+}
+
+.action-error__dismiss {
+  background: transparent;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: var(--safepick-radius-sm);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+
+  &:hover {
+    background: rgba(220, 38, 38, 0.12);
+  }
+}
+
+// ---------- States ----------
+
+.roster__state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--safepick-space-4);
+  padding: var(--safepick-space-7) var(--safepick-space-5);
+  background: var(--safepick-surface);
+  border-radius: var(--safepick-radius-lg);
+  box-shadow: var(--safepick-shadow-sm);
+  text-align: center;
+
+  p {
+    margin: 0;
+    font-size: var(--safepick-text-md);
+    color: var(--safepick-text-muted);
+  }
+
+  mat-icon {
+    font-size: 40px;
+    width: 40px;
+    height: 40px;
+  }
+
+  &--error {
+    mat-icon { color: var(--safepick-danger); }
+    p { color: var(--safepick-danger); }
+  }
+
+  &--empty {
+    mat-icon { color: var(--safepick-accent); }
+  }
+}
+
+// ---------- Roster list ----------
+
+.roster__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--safepick-space-3);
+}
+
+// ---------- Learner card ----------
+
+.learner-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--safepick-space-3);
+  padding: var(--safepick-space-4);
+  background: var(--safepick-surface);
+  border-radius: var(--safepick-radius-lg);
+  box-shadow: var(--safepick-shadow-sm);
+  border: 1px solid var(--safepick-border);
+
+  &--pending {
+    border-left: 3px solid var(--safepick-warning);
+  }
+
+  &--resolved {
+    border-left: 3px solid transparent;
+  }
+}
+
+.learner-card__top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--safepick-space-3);
+}
+
+.learner-card__identity {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.learner-card__name {
+  font-size: var(--safepick-text-lg);
+  font-weight: 600;
+  color: var(--safepick-text);
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.learner-card__class {
+  font-family: var(--safepick-font-mono);
+  font-size: var(--safepick-text-sm);
+  color: var(--safepick-text-muted);
+  margin-top: 2px;
+}
+
+// ---------- Status pill ----------
+
+.status-pill {
+  display: inline-block;
+  flex-shrink: 0;
+  padding: 4px 10px;
+  border-radius: var(--safepick-radius-pill);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  border: 1px solid transparent;
+
+  &--success {
+    background: var(--safepick-accent-light);
+    color: var(--safepick-accent-dark);
+    border-color: rgba(16, 185, 129, 0.35);
+  }
+
+  &--warning {
+    background: var(--safepick-warning-light);
+    color: #92400E;
+    border-color: rgba(245, 158, 11, 0.4);
+  }
+
+  &--neutral {
+    background: var(--safepick-metal-1);
+    color: var(--safepick-metal-3);
+    border-color: var(--safepick-border);
+  }
+
+  &--danger {
+    background: var(--safepick-danger-light);
+    color: var(--safepick-danger);
+    border-color: rgba(220, 38, 38, 0.35);
+  }
+}
+
+// ---------- Card details ----------
+
+.learner-card__detail {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--safepick-text-sm);
+  color: var(--safepick-text-muted);
+
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+  }
+
+  &--success {
+    color: var(--safepick-accent-dark);
+
+    mat-icon {
+      color: var(--safepick-accent);
+    }
+  }
+}
+
+// ---------- Actions ----------
+
+.learner-card__actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--safepick-space-2);
+  margin-top: var(--safepick-space-1);
+}
+
+.learner-card__action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--safepick-space-2);
+  width: 100%;
+  border: none;
+  border-radius: var(--safepick-radius-md);
+  font-family: inherit;
+  font-size: var(--safepick-text-md);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  transition: opacity var(--safepick-motion-fast) var(--safepick-ease-out);
+
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+  }
+
+  // Primary — Confirm Pickup
+  &--primary {
+    height: 56px;
+    background: linear-gradient(
+      135deg,
+      #10B981 0%,
+      #059669 100%
+    );
+    color: #FFFFFF;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.22),
+      0 4px 10px -2px rgba(16, 185, 129, 0.35);
+
+    &:not(:disabled):hover {
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.28),
+        0 6px 14px -2px rgba(16, 185, 129, 0.45);
+    }
+
+    &:not(:disabled):active {
+      transform: translateY(1px);
+    }
+
+    // Spinner inside the primary button.
+    mat-spinner {
+      --mdc-circular-progress-active-indicator-color: #FFFFFF;
+      display: inline-block;
+    }
+  }
+
+  // Secondary — Not in car
+  &--secondary {
+    height: 44px;
+    background: var(--safepick-surface-alt);
+    color: var(--safepick-metal-3);
+    border: 1px solid var(--safepick-border);
+
+    &:not(:disabled):hover {
+      background: #F3F4F6;
+      color: var(--safepick-text);
+    }
+
+    &:not(:disabled):active {
+      transform: translateY(1px);
+    }
+  }
+}

@@ -1,0 +1,145 @@
+<!-- ============================================================
+     RosterComponent — 5.5e
+     The driver's roster with confirm-pickup and not-in-car.
+     ============================================================ -->
+
+<div class="roster">
+
+  <header class="roster__header">
+    <h1 class="roster__date">{{ displayDate }}</h1>
+    @if (state() === 'ready') {
+      <p class="roster__meta">
+        @if (vehicleRegistration()) {
+          <span class="roster__vehicle">{{ vehicleRegistration() }}</span>
+          <span class="roster__dot">·</span>
+        }
+        <span class="roster__count">
+          {{ learnerCount() }} {{ learnerCount() === 1 ? 'learner' : 'learners' }}
+        </span>
+      </p>
+    }
+  </header>
+
+  @if (actionError(); as msg) {
+    <div class="action-error" role="alert">
+      <mat-icon aria-hidden="true">error_outline</mat-icon>
+      <span class="action-error__text">{{ msg }}</span>
+      <button
+        type="button"
+        class="action-error__dismiss"
+        (click)="dismissActionError()"
+        aria-label="Dismiss">
+        <mat-icon aria-hidden="true">close</mat-icon>
+      </button>
+    </div>
+  }
+
+  @if (state() === 'loading') {
+    <div class="roster__state roster__state--loading">
+      <mat-spinner diameter="36"></mat-spinner>
+      <p>Loading today’s roster…</p>
+    </div>
+  }
+
+  @if (state() === 'error') {
+    <div class="roster__state roster__state--error" role="alert">
+      <mat-icon aria-hidden="true">error_outline</mat-icon>
+      <p>{{ errorMessage() }}</p>
+      <button mat-flat-button color="primary" (click)="load()">
+        Try again
+      </button>
+    </div>
+  }
+
+  @if (state() === 'ready' && !hasRows()) {
+    <div class="roster__state roster__state--empty">
+      <mat-icon aria-hidden="true">check_circle_outline</mat-icon>
+      <p>No learners assigned for today.</p>
+    </div>
+  }
+
+  @if (state() === 'ready' && hasRows()) {
+    <ul class="roster__list">
+      @for (row of rows(); track row.learnerId) {
+        <li
+          class="learner-card"
+          [class.learner-card--pending]="row.status === 'Pending'"
+          [class.learner-card--resolved]="row.status !== 'Pending'">
+
+          <div class="learner-card__top">
+            <div class="learner-card__identity">
+              <div class="learner-card__name">{{ row.learnerFullName }}</div>
+              <div class="learner-card__class">{{ row.classGroup }}</div>
+            </div>
+
+            @if (row.status !== 'Pending') {
+              <span
+                class="status-pill"
+                [class.status-pill--success]="row.status === 'PickedUp'"
+                [class.status-pill--warning]="row.status === 'NotInCar'"
+                [class.status-pill--neutral]="
+                  row.status === 'SchoolMarkedAbsent' ||
+                  row.status === 'Corrected'
+                "
+                [class.status-pill--danger]="row.status === 'Gapped'">
+                {{ statusLabel(row.status) }}
+              </span>
+            }
+          </div>
+
+          @if (row.resolvedAt && (row.status === 'PickedUp' || row.status === 'Corrected')) {
+            <div class="learner-card__detail learner-card__detail--success">
+              <mat-icon aria-hidden="true">check_circle</mat-icon>
+              <span>Confirmed at {{ formatTime(row.resolvedAt) }}</span>
+            </div>
+          }
+
+          @if (row.note) {
+            <div class="learner-card__detail">
+              <mat-icon aria-hidden="true">info_outline</mat-icon>
+              <span>{{ row.note }}</span>
+            </div>
+          }
+
+          @if (row.status === 'Pending') {
+            <div class="learner-card__actions">
+              <button
+                type="button"
+                class="learner-card__action learner-card__action--primary"
+                [disabled]="isSubmitting(row.learnerId)"
+                (click)="confirmPickup(row)">
+                @if (isSubmitting(row.learnerId)) {
+                  <mat-spinner diameter="20"></mat-spinner>
+                  <span>Confirming…</span>
+                } @else {
+                  <mat-icon aria-hidden="true">check</mat-icon>
+                  <span>Confirm Pickup</span>
+                }
+              </button>
+              <button
+                type="button"
+                class="learner-card__action learner-card__action--secondary"
+                [disabled]="isSubmitting(row.learnerId)"
+                (click)="openNotInCarSheet(row)">
+                <mat-icon aria-hidden="true">person_off</mat-icon>
+                <span>Not in car</span>
+              </button>
+            </div>
+          }
+
+        </li>
+      }
+    </ul>
+  }
+
+  <!-- Not in car bottom sheet -->
+  @if (sheetFor(); as sheetRow) {
+    <app-not-in-car-sheet
+      [row]="sheetRow"
+      [submitting]="sheetSubmitting()"
+      (submitReason)="submitNotInCar($event)"
+      (dismiss)="closeSheet()">
+    </app-not-in-car-sheet>
+  }
+
+</div>

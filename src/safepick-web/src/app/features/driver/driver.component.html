@@ -1,0 +1,148 @@
+<!-- ============================================================
+     DriverComponent — the driver's landing dashboard
+     ============================================================ -->
+
+<div class="driver-dash">
+
+  <!-- Loading -->
+  @if (state() === 'loading') {
+    <div class="driver-dash__state">
+      <mat-spinner diameter="36"></mat-spinner>
+      <p>Loading…</p>
+    </div>
+  }
+
+  <!-- Error -->
+  @if (state() === 'error') {
+    <div class="driver-dash__state driver-dash__state--error" role="alert">
+      <mat-icon aria-hidden="true">error_outline</mat-icon>
+      <p>{{ errorMessage() }}</p>
+      <button mat-flat-button color="primary" (click)="load()">
+        Try again
+      </button>
+    </div>
+  }
+
+  <!-- Ready -->
+  @if (state() === 'ready' && driver(); as d) {
+
+    <!-- Greeting -->
+    <header class="driver-dash__header">
+      <h1 class="driver-dash__greeting">{{ greeting() }}</h1>
+      <p class="driver-dash__name">{{ d.fullName }}</p>
+      <p class="driver-dash__date">{{ displayDate }}</p>
+    </header>
+
+    <!-- ============ AWAITING APPROVAL ============ -->
+    @if (isAwaitingApproval()) {
+      <section class="awaiting">
+        <div class="awaiting__icon">
+          <mat-icon aria-hidden="true">hourglass_top</mat-icon>
+        </div>
+
+        <h2 class="awaiting__title">Awaiting approval</h2>
+
+        <p class="awaiting__text">
+          Your registration has been received.
+          @if (d.schoolName) {
+            <strong>{{ d.schoolName }}</strong> will review it shortly.
+          } @else {
+            A school admin will review it shortly.
+          }
+        </p>
+
+        <p class="awaiting__hint">
+          You’ll be able to see your transport roster once you’ve been approved.
+        </p>
+      </section>
+    }
+
+    <!-- ============ REJECTED / REVOKED ============ -->
+    @if (isRejected()) {
+      <section class="awaiting awaiting--danger">
+        <div class="awaiting__icon">
+          <mat-icon aria-hidden="true">block</mat-icon>
+        </div>
+
+        <h2 class="awaiting__title">Registration not approved</h2>
+
+        <p class="awaiting__text">
+          Your registration was not approved
+          @if (d.schoolName) {
+            by <strong>{{ d.schoolName }}</strong>.
+          } @else {
+            by the school.
+          }
+        </p>
+
+        <p class="awaiting__hint">
+          If you believe this is in error, please contact the school directly.
+        </p>
+      </section>
+    }
+
+    <!-- ============ APPROVED — THE REAL DASHBOARD ============ -->
+    @if (isApproved()) {
+
+      <!-- The big roster CTA -->
+      <a class="roster-cta" routerLink="/driver/roster">
+        <div class="roster-cta__icon">
+          <mat-icon aria-hidden="true">list_alt</mat-icon>
+        </div>
+
+        <div class="roster-cta__body">
+          <div class="roster-cta__count">
+            {{ expected() }}
+            {{ expected() === 1 ? 'learner' : 'learners' }}
+          </div>
+          <div class="roster-cta__sub">
+            on today’s roster
+          </div>
+        </div>
+
+        <div class="roster-cta__arrow">
+          <mat-icon aria-hidden="true">arrow_forward</mat-icon>
+        </div>
+      </a>
+
+      <!-- Status at a glance -->
+      <section class="glance">
+        <h2 class="glance__title">Today at a glance</h2>
+
+        <div class="glance__row">
+          <div class="glance__cell glance__cell--success">
+            <div class="glance__value">{{ pickedUp() }}</div>
+            <div class="glance__label">Picked up</div>
+          </div>
+
+          <div class="glance__cell glance__cell--warning">
+            <div class="glance__value">{{ notInCar() }}</div>
+            <div class="glance__label">Not in car</div>
+          </div>
+
+          <div class="glance__cell glance__cell--neutral">
+            <div class="glance__value">{{ pending() }}</div>
+            <div class="glance__label">Pending</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Vehicle -->
+      <section class="vehicle">
+        <div class="vehicle__header">
+          <mat-icon aria-hidden="true">directions_bus</mat-icon>
+          <span class="vehicle__title">Your vehicle</span>
+        </div>
+
+        <div class="vehicle__plate">{{ d.vehicle.registration }}</div>
+        <div class="vehicle__detail">
+          {{ d.vehicle.make }} {{ d.vehicle.model }}
+          <span class="vehicle__dot">·</span>
+          {{ d.vehicle.capacity }} seats
+        </div>
+      </section>
+    }
+
+  }
+
+</div>

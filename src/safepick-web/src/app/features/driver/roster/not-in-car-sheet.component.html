@@ -1,0 +1,102 @@
+<!-- ============================================================
+     NotInCarSheetComponent — 5.5e
+     Bottom sheet for marking a learner as not in the car.
+     ============================================================ -->
+
+<div
+  class="sheet-backdrop"
+  (click)="onBackdropClick($event)"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="sheet-title">
+
+  <div class="sheet" (click)="$event.stopPropagation()">
+
+    <!-- Drag handle -->
+    <div class="sheet__handle" aria-hidden="true"></div>
+
+    <!-- Header -->
+    <div class="sheet__header">
+      <h2 id="sheet-title" class="sheet__title">Mark as not in car</h2>
+      <p class="sheet__subtitle">
+        {{ row.learnerFullName }} · {{ row.classGroup }}
+      </p>
+    </div>
+
+    <!-- Form -->
+    <form
+      class="sheet__form"
+      [formGroup]="form"
+      (ngSubmit)="onSubmit()"
+      novalidate>
+
+      <p class="sheet__question">
+        Why is this learner not in the car?
+      </p>
+
+      <!-- Reason options -->
+      <div class="sheet__options" role="radiogroup">
+        @for (option of reasons; track option.value) {
+          <label
+            class="sheet__option"
+            [class.sheet__option--selected]="reason.value === option.value">
+            <input
+              type="radio"
+              formControlName="reason"
+              [value]="option.value" />
+            <span class="sheet__option-label">{{ option.label }}</span>
+          </label>
+        }
+      </div>
+
+      <!-- Note -->
+      <label class="sheet__note-label">
+        <span class="sheet__note-title">
+          Notes
+          @if (selectedRequiresNote) {
+            <span class="sheet__required">*</span>
+          } @else {
+            <span class="sheet__optional">(optional)</span>
+          }
+        </span>
+        <textarea
+          class="sheet__note"
+          formControlName="note"
+          rows="2"
+          [placeholder]="
+            selectedRequiresNote
+              ? 'Please describe the reason'
+              : 'Add any details (optional)'
+          "
+          [attr.aria-invalid]="note.invalid && note.touched"></textarea>
+        @if (selectedRequiresNote && note.hasError('required') && note.touched) {
+          <span class="sheet__error">A note is required for “Other”.</span>
+        }
+      </label>
+
+      <!-- Actions -->
+      <div class="sheet__actions">
+        <button
+          type="submit"
+          class="sheet__button sheet__button--primary"
+          [disabled]="submitting || form.invalid">
+          @if (submitting) {
+            <mat-spinner diameter="20"></mat-spinner>
+            <span>Submitting…</span>
+          } @else {
+            <span>Confirm</span>
+          }
+        </button>
+        <button
+          type="button"
+          class="sheet__button sheet__button--secondary"
+          [disabled]="submitting"
+          (click)="onDismiss()">
+          Back
+        </button>
+      </div>
+
+    </form>
+
+  </div>
+</div>
