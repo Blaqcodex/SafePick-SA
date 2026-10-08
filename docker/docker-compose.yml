@@ -1,0 +1,29 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: safepick-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: safepick
+      POSTGRES_USER: safepick
+      POSTGRES_PASSWORD: safepick_dev_password
+    ports:
+      - "5433:5432"
+    volumes:
+      - safepick_pgdata:/var/lib/postgresql/data
+      - ./init:/docker-entrypoint-initdb.d
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: safepick-pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@safepick.local
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+
+volumes:
+  safepick_pgdata:
