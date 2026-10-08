@@ -5,4 +5,7 @@
     <Project Path="src/SafePick.Domain/SafePick.Domain.csproj" />
     <Project Path="src/SafePick.Infrastructure/SafePick.Infrastructure.csproj" />
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/SafePick.Domain.Tests/SafePick.Domain.Tests.csproj" />
+  </Folder>
 </Solution>
