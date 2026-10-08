@@ -1,0 +1,129 @@
+<!-- ============================================================
+     InviteSheetComponent — 5.10d
+     ============================================================ -->
+
+<div
+  class="sheet-backdrop"
+  (click)="onBackdropClick($event)"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="sheet-title">
+
+  <div class="sheet" (click)="$event.stopPropagation()">
+
+    <div class="sheet__handle" aria-hidden="true"></div>
+
+    <div class="sheet__header">
+      <h2 id="sheet-title" class="sheet__title">Invite School Admin</h2>
+      <p class="sheet__subtitle">
+        The new admin will receive an email with a link to set up their account.
+      </p>
+    </div>
+
+    <form
+      class="sheet__form"
+      [formGroup]="form"
+      (ngSubmit)="onSubmit()"
+      novalidate>
+
+      <!-- Admin email -->
+      <label class="sheet__field">
+        <span class="sheet__label">Admin email</span>
+        <input
+          type="email"
+          class="sheet__input"
+          formControlName="email"
+          placeholder="admin@school.co.za"
+          autocomplete="off"
+          inputmode="email"
+          spellcheck="false"
+          [attr.aria-invalid]="email.invalid && email.touched" />
+        @if (email.touched && email.hasError('required')) {
+          <span class="sheet__error">Email is required.</span>
+        } @else if (email.touched && email.hasError('email')) {
+          <span class="sheet__error">Please enter a valid email address.</span>
+        }
+      </label>
+
+      <!-- Admin name -->
+      <label class="sheet__field">
+        <span class="sheet__label">Admin name</span>
+        <input
+          type="text"
+          class="sheet__input"
+          formControlName="displayName"
+          placeholder="e.g. Jane Dlamini"
+          autocomplete="name"
+          [attr.aria-invalid]="displayName.invalid && displayName.touched" />
+        @if (displayName.touched && displayName.hasError('required')) {
+          <span class="sheet__error">Name is required.</span>
+        } @else if (displayName.touched && displayName.hasError('minlength')) {
+          <span class="sheet__error">Name is too short.</span>
+        }
+      </label>
+
+      <!-- School name -->
+      <label class="sheet__field">
+        <span class="sheet__label">School name</span>
+        <input
+          type="text"
+          class="sheet__input"
+          formControlName="schoolName"
+          placeholder="e.g. Sunrise Primary School"
+          autocomplete="organization"
+          [attr.aria-invalid]="schoolName.invalid && schoolName.touched" />
+        @if (schoolName.touched && schoolName.hasError('required')) {
+          <span class="sheet__error">School name is required.</span>
+        } @else if (schoolName.touched && schoolName.hasError('minlength')) {
+          <span class="sheet__error">School name is too short.</span>
+        }
+      </label>
+
+      <!-- School contact email -->
+      <label class="sheet__field">
+        <span class="sheet__label">School contact email</span>
+        <input
+          type="email"
+          class="sheet__input"
+          formControlName="schoolContactEmail"
+          placeholder="contact@school.co.za"
+          autocomplete="off"
+          inputmode="email"
+          spellcheck="false"
+          [attr.aria-invalid]="schoolContactEmail.invalid && schoolContactEmail.touched" />
+        @if (schoolContactEmail.touched && schoolContactEmail.hasError('required')) {
+          <span class="sheet__error">Contact email is required.</span>
+        } @else if (schoolContactEmail.touched && schoolContactEmail.hasError('email')) {
+          <span class="sheet__error">Please enter a valid email address.</span>
+        }
+      </label>
+
+      <p class="sheet__note">
+        A new School will be created for this invitation.
+      </p>
+
+      <div class="sheet__actions">
+        <button
+          type="submit"
+          class="sheet__button sheet__button--primary"
+          [disabled]="submitting || form.invalid">
+          @if (submitting) {
+            <mat-spinner diameter="20"></mat-spinner>
+            <span>Sending…</span>
+          } @else {
+            <span>Send invitation</span>
+          }
+        </button>
+        <button
+          type="button"
+          class="sheet__button sheet__button--secondary"
+          [disabled]="submitting"
+          (click)="onDismiss()">
+          Back
+        </button>
+      </div>
+
+    </form>
+
+  </div>
+</div>

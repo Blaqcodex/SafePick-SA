@@ -1,0 +1,96 @@
+<!-- ============================================================
+     InviteResultComponent — 5.10d
+     ============================================================ -->
+
+<div class="result">
+
+  <!-- Success banner -->
+  <div class="result__banner">
+    <mat-icon aria-hidden="true">check_circle</mat-icon>
+    <div>
+      <h2 class="result__banner-title">Invitation created</h2>
+      <p class="result__banner-sub">
+        An invitation has been sent to <strong>{{ result.email }}</strong>.
+      </p>
+    </div>
+  </div>
+
+  <!-- Email delivery status -->
+  <div
+    class="result__delivery"
+    [class.result__delivery--ok]="result.emailSent"
+    [class.result__delivery--warn]="!result.emailSent">
+    <mat-icon aria-hidden="true">
+      {{ result.emailSent ? 'mark_email_read' : 'warning_amber' }}
+    </mat-icon>
+    <span>
+      @if (result.emailSent) {
+        Email delivery: <strong>Sent</strong>
+      } @else {
+        Email delivery: <strong>Failed</strong>. Please share the link or token manually.
+      }
+    </span>
+  </div>
+
+  <!-- Invite link -->
+  <section class="result__section">
+    <div class="result__section-label">Invitation link</div>
+    <div class="result__box">
+      <code class="result__value result__value--url">{{ result.inviteUrl }}</code>
+      <button
+        type="button"
+        class="result__copy"
+        [class.result__copy--copied]="linkCopied()"
+        (click)="copyLink()">
+        <mat-icon aria-hidden="true">
+          {{ linkCopied() ? 'check' : 'content_copy' }}
+        </mat-icon>
+        <span>{{ linkCopied() ? 'Copied' : 'Copy' }}</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- Raw token -->
+  <section class="result__section">
+    <div class="result__section-label">Token</div>
+    <div class="result__box">
+      <code class="result__value result__value--token">{{ result.rawToken }}</code>
+      <button
+        type="button"
+        class="result__copy"
+        [class.result__copy--copied]="tokenCopied()"
+        (click)="copyToken()">
+        <mat-icon aria-hidden="true">
+          {{ tokenCopied() ? 'check' : 'content_copy' }}
+        </mat-icon>
+        <span>{{ tokenCopied() ? 'Copied' : 'Copy' }}</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- Expiry -->
+  <div class="result__expiry">
+    <mat-icon aria-hidden="true">schedule</mat-icon>
+    <span>Expires {{ formatExpiry(result.expiresAt) }}</span>
+  </div>
+
+  <!-- Warning -->
+  <div class="result__warning">
+    <mat-icon aria-hidden="true">info_outline</mat-icon>
+    <span>
+      This token is shown <strong>only once</strong>. Copy it now if
+      you need to share it manually.
+    </span>
+  </div>
+
+  <!-- Done -->
+  <div class="result__actions">
+    <button
+      type="button"
+      class="result__button"
+      (click)="onDone()">
+      Done
+    </button>
+  </div>
+
+</div>

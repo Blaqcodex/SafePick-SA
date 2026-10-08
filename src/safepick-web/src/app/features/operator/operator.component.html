@@ -1,0 +1,200 @@
+<!-- ============================================================
+     OperatorComponent — 5.10d
+     Invite flow is live. Result panel replaces the board after
+     a successful invitation.
+     ============================================================ -->
+
+<div class="operator">
+
+  <!-- Result panel takes over the whole screen when present -->
+  @if (createdResult(); as result) {
+    <app-invite-result
+      [result]="result"
+      (done)="onResultDone()">
+    </app-invite-result>
+  }
+
+  <!-- Normal board -->
+  @if (!showingResult()) {
+
+    <header class="operator__header">
+      <div class="operator__title-row">
+        <div>
+          <h1 class="operator__title">Operator</h1>
+          <p class="operator__subtitle">
+            Provision schools and invite School Admins.
+          </p>
+        </div>
+
+        <button
+          type="button"
+          class="operator__invite-btn"
+          (click)="openInviteSheet()">
+          <mat-icon aria-hidden="true">person_add</mat-icon>
+          <span>Invite School Admin</span>
+        </button>
+      </div>
+    </header>
+
+    @if (actionError(); as msg) {
+      <div class="action-error" role="alert">
+        <mat-icon aria-hidden="true">error_outline</mat-icon>
+        <span class="action-error__text">{{ msg }}</span>
+        <button
+          type="button"
+          class="action-error__dismiss"
+          (click)="actionError.set(null)"
+          aria-label="Dismiss">
+          <mat-icon aria-hidden="true">close</mat-icon>
+        </button>
+      </div>
+    }
+
+    <nav class="operator__tabs" role="tablist" aria-label="Operator views">
+      @for (tab of tabs; track tab.value) {
+        <button
+          type="button"
+          role="tab"
+          class="operator__tab"
+          [class.operator__tab--active]="activeTab() === tab.value"
+          [attr.aria-selected]="activeTab() === tab.value"
+          (click)="setTab(tab.value)">
+          <span>{{ tab.label }}</span>
+          @if (tab.value === 'Invitations' && invitationCount() > 0) {
+            <span class="operator__tab-count">{{ invitationCount() }}</span>
+          }
+          @if (tab.value === 'Schools' && schoolCount() > 0) {
+            <span class="operator__tab-count">{{ schoolCount() }}</span>
+          }
+        </button>
+      }
+    </nav>
+
+    @if (state() === 'loading') {
+      <div class="operator__state operator__state--loading">
+        <mat-spinner diameter="36"></mat-spinner>
+        <p>Loading…</p>
+      </div>
+    }
+
+    @if (state() === 'error') {
+      <div class="operator__state operator__state--error" role="alert">
+        <mat-icon aria-hidden="true">error_outline</mat-icon>
+        <p>{{ errorMessage() }}</p>
+        <button mat-flat-button color="primary" (click)="load()">
+          Try again
+        </button>
+      </div>
+    }
+
+    <!-- Invitations tab -->
+    @if (state() === 'ready' && activeTab() === 'Invitations') {
+      @if (!hasInvitations()) {
+        <div class="operator__state operator__state--empty">
+          <mat-icon aria-hidden="true">mail_outline</mat-icon>
+          <p>No invitations yet.</p>
+          <p class="operator__state-hint">
+            Click “Invite School Admin” to issue your first invitation.
+          </p>
+        </div>
+      }
+
+      @if (hasInvitations()) {
+        <ul class="invitation-list">
+          @for (inv of invitations(); track inv.invitationId) {
+            <li
+              class="invitation-card"
+              [class.invitation-card--pending]="inv.status === 'Pending'"
+              [class.invitation-card--accepted]="inv.status === 'Accepted'"
+              [class.invitation-card--expired]="inv.status === 'Expired'"
+              [class.invitation-card--revoked]="inv.status === 'Revoked'">
+
+              <div class="invitation-card__top">
+                <div class="invitation-card__identity">
+                  <div class="invitation-card__email">{{ inv.email }}</div>
+                  <div class="invitation-card__school">{{ inv.schoolName }}</div>
+                </div>
+
+                <span
+                  class="status-pill"
+                  [class.status-pill--warning]="inv.status === 'Pending'"
+                  [class.status-pill--success]="inv.status === 'Accepted'"
+                  [class.status-pill--neutral]="inv.status === 'Expired'"
+                  [class.status-pill--danger]="inv.status === 'Revoked'">
+                  {{ statusLabel(inv.status) }}
+                </span>
+              </div>
+
+              <div class="invitation-card__meta">
+                <span class="invitation-card__role">{{ inv.role }}</span>
+                <span class="invitation-card__dot">·</span>
+                <span>Issued {{ formatDateTime(inv.issuedAt) }}</span>
+              </div>
+
+              <div class="invitation-card__dates">
+                @if (inv.status === 'Accepted' && inv.acceptedAt) {
+                  <div class="invitation-card__date invitation-card__date--success">
+                    <mat-icon aria-hidden="true">check_circle</mat-icon>
+                    <span>Accepted {{ formatDateTime(inv.acceptedAt) }}</span>
+                  </div>
+                } @else {
+                  <div class="invitation-card__date">
+                    <mat-icon aria-hidden="true">schedule</mat-icon>
+                    <span>Expires {{ formatDateTime(inv.expiresAt) }}</span>
+                  </div>
+                }
+              </div>
+
+            </li>
+          }
+        </ul>
+      }
+    }
+
+    <!-- Schools tab -->
+    @if (state() === 'ready' && activeTab() === 'Schools') {
+      @if (!hasSchools()) {
+        <div class="operator__state operator__state--empty">
+          <mat-icon aria-hidden="true">school</mat-icon>
+          <p>No schools yet.</p>
+          <p class="operator__state-hint">
+            Schools are created automatically when you invite their first administrator.
+          </p>
+        </div>
+      }
+
+      @if (hasSchools()) {
+        <ul class="school-list">
+          @for (school of schools(); track school.schoolId) {
+            <li class="school-card">
+              <div class="school-card__name">{{ school.name }}</div>
+              <div class="school-card__email">{{ school.contactEmail }}</div>
+
+              <div class="school-card__stats">
+                <div class="school-card__stat">
+                  <mat-icon aria-hidden="true">groups</mat-icon>
+                  <span>{{ school.learnerCount }} {{ school.learnerCount === 1 ? 'learner' : 'learners' }}</span>
+                </div>
+                <div class="school-card__stat">
+                  <mat-icon aria-hidden="true">directions_bus</mat-icon>
+                  <span>{{ school.driverCount }} {{ school.driverCount === 1 ? 'driver' : 'drivers' }}</span>
+                </div>
+              </div>
+            </li>
+          }
+        </ul>
+      }
+    }
+
+  }
+
+  <!-- Invite sheet -->
+  @if (inviteSheetOpen()) {
+    <app-invite-sheet
+      [submitting]="sheetSubmitting()"
+      (submitInvite)="submitInvite($event)"
+      (dismiss)="closeInviteSheet()">
+    </app-invite-sheet>
+  }
+
+</div>
