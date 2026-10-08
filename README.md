@@ -69,3 +69,21 @@ before starting the API:
 For local development, use .NET User Secrets or environment variables rather
 than committing credentials. `appsettings.Development.json` is excluded by
 `.gitignore`; do not force-add it to Git.
+
+## Build and Test
+
+Run the backend build and domain tests from the repository root:
+
+```powershell
+dotnet test SafePick.slnx --configuration Release
+```
+
+Build the Angular frontend for production:
+
+```powershell
+cd src/safepick-web
+npm ci
+npm run build
+```
+
+GitHub Actions runs both checks on pushes and pull requests targeting `main`.
