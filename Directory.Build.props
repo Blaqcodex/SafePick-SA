@@ -1,0 +1,36 @@
+<Project>
+
+  <!--
+    SafePick SA — Directory.Build.props
+    Shared MSBuild properties applied to ALL .NET projects in this repository.
+  -->
+
+  <PropertyGroup>
+    <!-- Language & Runtime -->
+    <TargetFramework>net10.0</TargetFramework>
+    <LangVersion>14.0</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+
+    <!-- Code Quality -->
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarningsAsErrors />
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <AnalysisLevel>latest-recommended</AnalysisLevel>
+
+    <!-- Deterministic Builds -->
+    <Deterministic>true</Deterministic>
+    <ContinuousIntegrationBuild Condition="'$(CI)' == 'true'">true</ContinuousIntegrationBuild>
+
+    <!-- Assembly Metadata -->
+    <Company>SafePick SA</Company>
+    <Product>SafePick SA</Product>
+    <Copyright>Copyright © SafePick SA</Copyright>
+    <Version>0.1.0</Version>
+
+    <!-- Output -->
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
+  </PropertyGroup>
+
+</Project>

@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <!--
+    SafePick.Api — HTTP surface and composition root.
+    Contains: Controllers, middleware, DI wiring, appsettings.
+    Dependencies: Application + Infrastructure.
+    This is the outermost layer. It knows about everything below it.
+  -->
+
+  <PropertyGroup>
+    <RootNamespace>SafePick.Api</RootNamespace>
+    <AssemblyName>SafePick.Api</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SafePick.Application\SafePick.Application.csproj" />
+    <ProjectReference Include="..\SafePick.Infrastructure\SafePick.Infrastructure.csproj" />
+  </ItemGroup>
+
+    <ItemGroup>
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="7.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="MediatR" Version="12.4.1" />
+  </ItemGroup>
+
+</Project>

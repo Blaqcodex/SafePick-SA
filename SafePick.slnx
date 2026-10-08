@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/SafePick.Api/SafePick.Api.csproj" />
+    <Project Path="src/SafePick.Application/SafePick.Application.csproj" />
+    <Project Path="src/SafePick.Domain/SafePick.Domain.csproj" />
+    <Project Path="src/SafePick.Infrastructure/SafePick.Infrastructure.csproj" />
+  </Folder>
+</Solution>

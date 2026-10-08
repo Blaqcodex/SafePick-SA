@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    SafePick.Domain — The custody model and authority chain.
+    Contains: Entities, Value Objects, Aggregates, Domain Events, Invariants.
+    Dependencies: NONE. The domain is pure.
+    This is the innermost layer of Clean Architecture.
+  -->
+
+  <PropertyGroup>
+    <RootNamespace>SafePick.Domain</RootNamespace>
+    <AssemblyName>SafePick.Domain</AssemblyName>
+  </PropertyGroup>
+
+</Project>

@@ -1,0 +1,31 @@
+# SafePick SA — EditorConfig
+# Enforces consistent coding style across the repository.
+# Read by VS Code, Visual Studio, Rider, and most modern editors.
+
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 4
+
+[*.{json,yml,yaml,md}]
+indent_size = 2
+
+[*.{cs,csx}]
+indent_size = 4
+dotnet_sort_system_directives_first = true
+csharp_new_line_before_open_brace = all
+csharp_style_namespace_declarations = file_scoped:suggestion
+
+[*.{ts,js,html,scss,css}]
+indent_size = 2
+
+[*.{sln,csproj,props,targets}]
+indent_size = 2
+
+[*.md]
+trim_trailing_whitespace = false

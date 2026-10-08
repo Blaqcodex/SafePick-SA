@@ -1,0 +1,79 @@
+# ============================================================
+# SafePick SA — .gitignore
+# ============================================================
+
+# ---------- .NET ----------
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.userprefs
+.vs/
+*.dll
+*.pdb
+*.cache
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# ---------- Angular / Node ----------
+node_modules/
+dist/
+tmp/
+out-tsc/
+bazel-out/
+.angular/
+.npm/
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.pnpm-store/
+
+# ---------- Environment & Secrets ----------
+.env
+.env.*
+!.env.example
+appsettings.Development.json
+appsettings.Local.json
+secrets.json
+*.pfx
+*.snk
+
+# ---------- IDE ----------
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# ---------- VS Code (keep shared config, ignore personal) ----------
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/launch.json
+!.vscode/tasks.json
+
+# ---------- Test & Coverage ----------
+coverage/
+*.coverage
+*.coveragexml
+TestResults/
+[Cc]overage*/
+
+# ---------- Logs & Temp ----------
+*.log
+*.tmp
+*.temp
+
+# ---------- Docker ----------
+docker/data/
+docker/volumes/
+
+# ---------- EF Core ----------
+*.dbmdl
+*.jfm
